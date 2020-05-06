@@ -289,8 +289,8 @@ namespace std {
 
 } // namespace std
 
-#include "ArxTypeTraits/tuple.h"
-#include "ArxTypeTraits/functional.h"
+#include "tuple.h"
+#include "functional.h"
 
 #endif // ARX_TYPE_TRAITS_DISABLE_STL
 
