@@ -324,6 +324,10 @@ namespace std {
     struct is_function<Ret(Args......) const volatile &&> : true_type {};
 
 
+    template<typename T>
+    struct is_empty : public integral_constant<bool, __is_empty(T)> { };
+
+
     template <class T>
     class decay
     {
