@@ -364,6 +364,15 @@ namespace std {
     using result_of = details::result_of<Sig>;
 
 
+    template <class T>
+    void swap(T& a, T& b)
+    {
+        T t = move(a);
+        a = move(b);
+        b = move(t);
+    }
+
+
 #ifndef ARX_TYPE_TRAITS_INITIALIZER_LIST_DEFINED
 #define ARX_TYPE_TRAITS_INITIALIZER_LIST_DEFINED
 
