@@ -418,6 +418,8 @@ namespace std {
     using remove_volatile_t = typename std::remove_volatile<T>::type;
     template<class T>
     using remove_reference_t = typename std::remove_reference<T>::type;
+    template<class T>
+    using remove_pointer_t = typename std::remove_pointer<T>::type;
 
     template<typename T, T ...Ts>
     struct integer_sequence
