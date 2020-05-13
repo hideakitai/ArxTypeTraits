@@ -95,6 +95,14 @@ Others are automatically enabled/disabled depending on compiler.
 - `arx::function_traits`
 
 
+## Used Inside of
+
+- [Packetizer](https://github.com/hideakitai/Packetizer)
+- [MsgPack](https://github.com/hideakitai/MsgPack)
+- [MsgPacketizer](https://github.com/hideakitai/MsgPacketizer)
+- [ArduinoOSC](https://github.com/hideakitai/ArduinoOSC)
+
+
 ## License
 
 MIT
