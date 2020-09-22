@@ -3,12 +3,23 @@
 #ifndef ARX_TYPE_TRAITS_FUNCTIONAL_H
 #define ARX_TYPE_TRAITS_FUNCTIONAL_H
 
-#include <Arduino.h>
-
-#ifdef ARX_TYPE_TRAITS_NEW_DISABLED
-    void* operator new (const size_t size, void* ptr) { (void)size; return ptr; }
+// If we have a <new> header, include it and assume it has placement new
+// (for AVR this has always been true, MEGAAVR does not have placement
+// new now, but will probably get it before <new> is added).
+// This also handles the case where ArduinoSTL is used, which defines an
+// inline placement new which would conflict with the below definition.
+#if __has_include(<new>)
+#include <new>
 #else
-    #include <new.h>
+// When there is no <new> header, there might be a <new.h> header, but
+// not all Arduino platform (versions) define a placement new operator
+// in there.
+// However, it is hard to detect whether it is or is not defined, but
+// the versions that do define it, do not define it inline in the
+// header, so we can just define it inline here without conflicts.
+// Note that there is no need to include anything to declare the
+// non-placement new operators, since those are implicit.
+inline void* operator new (const size_t size, void* ptr) noexcept { (void)size; return ptr; }
 #endif
 
 #ifdef ARX_TYPE_TRAITS_DISABLED
