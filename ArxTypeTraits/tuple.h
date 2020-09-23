@@ -3,7 +3,11 @@
 #ifndef ARX_TYPE_TRAITS_TUPLE_H
 #define ARX_TYPE_TRAITS_TUPLE_H
 
-#ifdef ARX_TYPE_TRAITS_DISABLED
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201103L // Have libstdc++11
+
+#include <tuple>
+
+#else // Do not have libstdc++11
 
 namespace arx { namespace arx_std {
 
@@ -73,5 +77,6 @@ namespace arx { namespace arx_std {
 
 } } // namespace arx::std
 
-#endif // ARX_TYPE_TRAITS_DISABLED
+#endif // Do not have libstdc++11
+
 #endif // ARX_TYPE_TRAITS_TUPLE_H

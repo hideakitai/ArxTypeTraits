@@ -3,9 +3,26 @@
 #ifndef ARX_TYPE_TRAITS_H
 #define ARX_TYPE_TRAITS_H
 
-#if defined(ARDUINO_ARCH_AVR)\
- || defined(ARDUINO_ARCH_MEGAAVR)
-    #define ARX_TYPE_TRAITS_DISABLED
+#if !defined(ARX_HAVE_LIBSTDCPLUSPLUS)
+    #if !defined(__has_include)
+        #error "Compiler does not support __has_include, please report a bug against the ArxTypeTraits library about this."
+    #endif
+    #if __has_include(<cstdlib>)
+        #include <cstdlib>
+        #if defined(__GLIBCXX__) || defined(_LIBCPP_VERSION)
+            // For gcc's libstdc++ and clang's libc++, assume that
+            // __cplusplus tells us what the standard includes support
+            #define ARX_HAVE_LIBSTDCPLUSPLUS __cplusplus
+        #elif defined(__UCLIBCXX_MAJOR__)
+            // For uclibc++, assume C++98 support only.
+            #define ARX_HAVE_LIBSTDCPLUSPLUS 199711L
+        #else
+            #error "Unknown C++ library found, please report a bug against the ArxTypeTraits library about this."
+        #endif
+    #else
+        // Assume no standard library is available at all (e.g. on AVR)
+        #define ARX_HAVE_LIBSTDCPLUSPLUS 0
+    #endif
 #endif
 
 // Make sure std namespace exists
@@ -34,15 +51,6 @@ namespace std {
 }
 
 #include "ArxTypeTraits/replace_minmax_macros.h"
-
-#ifndef ARX_TYPE_TRAITS_DISABLED
-    #include <utility>
-    #include <limits>
-    #include <initializer_list>
-    #include <type_traits>
-    #include <tuple>
-    #include <functional>
-#endif
 
 #include "ArxTypeTraits/type_traits.h"
 

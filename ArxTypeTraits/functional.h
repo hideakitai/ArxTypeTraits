@@ -3,6 +3,12 @@
 #ifndef ARX_TYPE_TRAITS_FUNCTIONAL_H
 #define ARX_TYPE_TRAITS_FUNCTIONAL_H
 
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201103L // Have libstdc++11
+
+#include <functional>
+
+#else // Do not have libstdc++11
+
 // If we have a <new> header, include it and assume it has placement new
 // (for AVR this has always been true, MEGAAVR does not have placement
 // new now, but will probably get it before <new> is added).
@@ -21,8 +27,6 @@
 // non-placement new operators, since those are implicit.
 inline void* operator new (const size_t size, void* ptr) noexcept { (void)size; return ptr; }
 #endif
-
-#ifdef ARX_TYPE_TRAITS_DISABLED
 
 namespace arx { namespace arx_std {
 
@@ -156,5 +160,6 @@ namespace arx { namespace arx_std {
 
 } } // namespace arx::std
 
-#endif // ARX_TYPE_TRAITS_DISABLED
+#endif // Do not have libstdc++11
+
 #endif // ARX_TYPE_TRAITS_FUNCTIONAL_H

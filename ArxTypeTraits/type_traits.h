@@ -3,7 +3,32 @@
 #ifndef ARX_TYPE_TRAITS_TYPE_TRAITS_H
 #define ARX_TYPE_TRAITS_TYPE_TRAITS_H
 
-#ifdef ARX_TYPE_TRAITS_DISABLED
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 199711L // Have libstdc++98
+
+#include <utility>
+
+#else // Do not have libstdc++98
+
+namespace arx { namespace arx_std {
+
+    template <class T>
+    void swap(T& a, T& b)
+    {
+        T t = move(a);
+        a = move(b);
+        b = move(t);
+    }
+} } // namespace arx::arx_std
+
+#endif // Do not have libstdc++98
+
+
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201103L // Have libstdc++11
+
+#include <limits>
+#include <type_traits>
+
+#else // Do not have libstdc++11
 
 #include <float.h>
 #include <limits.h>
@@ -358,25 +383,18 @@ namespace arx { namespace arx_std {
     template<class Sig>
     using result_of = details::result_of<Sig>;
 
-
-    template <class T>
-    void swap(T& a, T& b)
-    {
-        T t = move(a);
-        a = move(b);
-        b = move(t);
-    }
-
 } } // namespace arx::arx_std
+
+#endif // Do not have libstdc++11
 
 #include "initializer_list.h"
 #include "tuple.h"
 #include "functional.h"
 
-#endif // ARX_TYPE_TRAITS_DISABLE_STL
-
-
-#if __cplusplus < 201402L // C++11
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201402L // Have libstdc++14
+    // Nothing to include here, relevant header files were already included
+    // for C++11  above.
+#else // Do not have libstdc++14
 
 namespace arx { namespace arx_std {
 
@@ -434,10 +452,13 @@ namespace arx { namespace arx_std {
 
 } } // namespace arx::arx_std
 
-#endif // C++11
+#endif // Do not have libstdc++14
 
 
-#if __cplusplus < 201703L // C++14
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201703L // Have libstdc++17
+    // Nothing to include here, relevant header files were already included
+    // for C++11  above.
+#else // Do not have libstdc++17
 
 namespace arx { namespace arx_std {
 
@@ -489,10 +510,14 @@ namespace arx { namespace arx_std {
 
 } } // namespace arx::arx_std
 
-#endif // C++14
+#endif // Do not have libstdc++17
 
 
-// C++17, C++2a
+#if ARX_HAVE_LIBSTDCPLUSPLUS > 201703L // Have libstdc++2a
+    // Nothing to include here, relevant header files were already included
+    // for C++11  above.
+#else // Do not have libstdc++2a
+
 namespace arx { namespace arx_std {
 
     template<class T>
@@ -505,7 +530,7 @@ namespace arx { namespace arx_std {
     using remove_cvref_t = typename remove_cvref<T>::type;
 
 } } // namespace arx::arx_std
-// C++17, C++2a
+#endif // Do not have libstdc++2a
 
 
 namespace arx { // others
