@@ -24,7 +24,6 @@
     }
 #endif
 
-#include <stddef.h>
 #include <float.h>
 #include <limits.h>
 #include <stdint.h>

@@ -16,7 +16,6 @@
     #endif
 #endif
 
-#include <stddef.h>
 #ifndef ARX_TYPE_TRAITS_DISABLED
     #include <type_traits>
     #include <tuple>
