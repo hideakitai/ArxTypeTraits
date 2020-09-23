@@ -5,25 +5,6 @@
 
 #ifdef ARX_TYPE_TRAITS_DISABLED
 
-#ifdef max
-    #undef max
-    template <typename T1, typename T2>
-    constexpr auto max(T1 x, T2 y)
-    -> decltype(x + y)
-    {
-        return (x > y) ? x : y;
-    }
-#endif
-#ifdef min
-    #undef min
-    template <typename T1, typename T2>
-    constexpr auto min(T1 x, T2 y)
-    -> decltype(x + y)
-    {
-        return (x < y) ? x : y;
-    }
-#endif
-
 #include <float.h>
 #include <limits.h>
 #include <stdint.h>

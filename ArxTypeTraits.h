@@ -16,6 +16,8 @@
     #endif
 #endif
 
+#include "ArxTypeTraits/replace_minmax_macros.h"
+
 #ifndef ARX_TYPE_TRAITS_DISABLED
     #include <utility>
     #include <limits>
