@@ -9,7 +9,7 @@
 #include <limits.h>
 #include <stdint.h>
 
-namespace std {
+namespace arx { namespace arx_std {
 
     using nullptr_t = decltype(nullptr);
 
@@ -367,7 +367,7 @@ namespace std {
         b = move(t);
     }
 
-} // namespace std
+} } // namespace arx::arx_std
 
 #include "initializer_list.h"
 #include "tuple.h"
@@ -379,7 +379,7 @@ namespace std {
 #if __cplusplus < 201402L // C++11
 #if !defined(OF_VERSION_MAJOR) || !defined(TARGET_WIN32)
 
-namespace std {
+namespace arx { namespace arx_std {
 
     template <bool B, typename T = void>
     using enable_if_t = typename enable_if<B, T>::type;
@@ -433,7 +433,7 @@ namespace std {
     template<typename... Ts>
     using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
-} // namespace std
+} } // namespace arx::arx_std
 
 #endif // !defined(OF_VERSION_MAJOR) || !defined(TARGET_WIN32)
 #endif // C++11
@@ -441,7 +441,7 @@ namespace std {
 
 #if __cplusplus < 201703L // C++14
 
-namespace std {
+namespace arx { namespace arx_std {
 
 #if !defined(OF_VERSION_MAJOR) || !defined(TARGET_WIN32)
 
@@ -493,13 +493,13 @@ namespace std {
         );
     }
 
-} // namespace std
+} } // namespace arx::arx_std
 
 #endif // C++14
 
 
 // C++17, C++2a
-namespace std {
+namespace arx { namespace arx_std {
 
     template<class T>
     struct remove_cvref
@@ -510,7 +510,7 @@ namespace std {
     template< class T >
     using remove_cvref_t = typename remove_cvref<T>::type;
 
-} // namespace std
+} } // namespace arx::arx_std
 // C++17, C++2a
 
 

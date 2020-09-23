@@ -13,7 +13,7 @@
 
 #ifdef ARX_TYPE_TRAITS_DISABLED
 
-namespace std {
+namespace arx { namespace arx_std {
 
     // reference:
     // stack overflow https://stackoverflow.com/questions/32074410/stdfunction-bind-like-type-erasure-without-standard-c-library
@@ -143,7 +143,7 @@ namespace std {
         return static_cast<bool>(f);
     }
 
-} // namespace std
+} } // namespace arx::std
 
 #endif // ARX_TYPE_TRAITS_DISABLED
 #endif // ARX_TYPE_TRAITS_FUNCTIONAL_H

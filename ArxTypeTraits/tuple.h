@@ -5,7 +5,7 @@
 
 #ifdef ARX_TYPE_TRAITS_DISABLED
 
-namespace std {
+namespace arx { namespace arx_std {
 
     // https://theolizer.com/cpp-school2/cpp-school2-15/
     // https://wandbox.org/permlink/C0BWIzjqg4iO3kKZ
@@ -71,7 +71,7 @@ namespace std {
         return std::tuple<typename std::remove_reference<Types>::type...>(std::forward<typename std::remove_reference<Types>::type>(args)...);
     }
 
-} // namespace std
+} } // namespace arx::std
 
 #endif // ARX_TYPE_TRAITS_DISABLED
 #endif // ARX_TYPE_TRAITS_TUPLE_H
