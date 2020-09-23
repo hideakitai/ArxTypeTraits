@@ -247,11 +247,11 @@ namespace std {
 
     template<class From, class To>
     struct is_convertible
-    : std::conditional <
+    : conditional <
         can_apply <details::try_convert, From, To>::value
         , true_type
-        , typename std::conditional <
-            std::is_arithmetic<From>::value && std::is_arithmetic<To>::value,
+        , typename conditional <
+            is_arithmetic<From>::value && is_arithmetic<To>::value,
             true_type,
             false_type
         >::type
@@ -268,7 +268,7 @@ namespace std {
     // specialization for regular functions
     template<class Ret, class... Args>
     struct is_function<Ret(Args...)> : true_type {};
-    // specialization for variadic functions such as std::printf
+    // specialization for variadic functions such as printf
     template<class Ret, class... Args>
     struct is_function<Ret(Args......)> : true_type {};
     // specialization for function types that have cv-qualifiers
@@ -382,21 +382,21 @@ namespace std {
 namespace std {
 
     template <bool B, typename T = void>
-    using enable_if_t = typename std::enable_if<B, T>::type;
+    using enable_if_t = typename enable_if<B, T>::type;
 
     template <typename T>
-    using decay_t = typename std::decay<T>::type;
+    using decay_t = typename decay<T>::type;
 
     template<class T>
-    using remove_cv_t = typename std::remove_cv<T>::type;
+    using remove_cv_t = typename remove_cv<T>::type;
     template<class T>
-    using remove_const_t = typename std::remove_const<T>::type;
+    using remove_const_t = typename remove_const<T>::type;
     template<class T>
-    using remove_volatile_t = typename std::remove_volatile<T>::type;
+    using remove_volatile_t = typename remove_volatile<T>::type;
     template<class T>
-    using remove_reference_t = typename std::remove_reference<T>::type;
+    using remove_reference_t = typename remove_reference<T>::type;
     template<class T>
-    using remove_pointer_t = typename std::remove_pointer<T>::type;
+    using remove_pointer_t = typename remove_pointer<T>::type;
 
     template<typename T, T ...Ts>
     struct integer_sequence
@@ -451,21 +451,21 @@ namespace std {
     using void_t = typename Tester<Ts...>::type;
 
     template <typename ...Args>
-    struct disjunction : std::false_type {};
+    struct disjunction : false_type {};
     template <typename Arg>
     struct disjunction <Arg> : Arg::type {};
     template <typename Arg, typename ...Args>
-    struct disjunction <Arg, Args...> : std::conditional<Arg::value, Arg, disjunction<Args...>>::type {};
+    struct disjunction <Arg, Args...> : conditional<Arg::value, Arg, disjunction<Args...>>::type {};
 
     template <typename ...Args>
-    struct conjunction : std::true_type {};
+    struct conjunction : true_type {};
     template <typename Arg>
     struct conjunction <Arg> : Arg::type {};
     template <typename Arg, typename ...Args>
-    struct conjunction <Arg, Args...> : std::conditional<Arg::value, conjunction<Args...>, Arg>::type {};
+    struct conjunction <Arg, Args...> : conditional<Arg::value, conjunction<Args...>, Arg>::type {};
 
     template <typename T>
-    struct negation : std::integral_constant<bool, !T::value> {};
+    struct negation : integral_constant<bool, !T::value> {};
 
 #endif // !defined(OF_VERSION_MAJOR) || !defined(TARGET_WIN32)
 
@@ -474,22 +474,22 @@ namespace std {
 
     template <class F, class Tuple, size_t... I>
     constexpr auto apply_impl(F&& f, Tuple&& t, index_sequence<I...>)
-    -> decltype(f(std::get<I>(std::forward<Tuple>(t))...))
+    -> decltype(f(get<I>(forward<Tuple>(t))...))
     {
-        return f(std::get<I>(std::forward<Tuple>(t))...);
+        return f(get<I>(forward<Tuple>(t))...);
     }
     template <class F, class Tuple>
     constexpr auto apply(F&& f, Tuple&& t)
     -> decltype(apply_impl(
-        std::forward<F>(f),
-        std::forward<Tuple>(t),
-        make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>{}
+        forward<F>(f),
+        forward<Tuple>(t),
+        make_index_sequence<tuple_size<decay_t<Tuple>>::value>{}
     ))
     {
         return apply_impl(
-            std::forward<F>(f),
-            std::forward<Tuple>(t),
-            make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>()
+            forward<F>(f),
+            forward<Tuple>(t),
+            make_index_sequence<tuple_size<decay_t<Tuple>>::value>()
         );
     }
 
@@ -504,7 +504,7 @@ namespace std {
     template<class T>
     struct remove_cvref
     {
-        typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+        typedef remove_cv_t<remove_reference_t<T>> type;
     };
 
     template< class T >
