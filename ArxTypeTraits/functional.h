@@ -19,7 +19,7 @@ namespace std {
     // stack overflow https://stackoverflow.com/questions/32074410/stdfunction-bind-like-type-erasure-without-standard-c-library
 
     template<class Signature>
-    struct function;
+    class function;
 
     template<class R, class... Args>
     class function<R(Args...)>
