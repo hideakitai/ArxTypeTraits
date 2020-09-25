@@ -3,6 +3,10 @@
 #ifndef ARX_TYPE_TRAITS_H
 #define ARX_TYPE_TRAITS_H
 
+#if __cplusplus < 201103L
+    #error "C++11 must be enabled in the compiler for this library to work, please check your compiler flags"
+#endif
+
 #if !defined(ARX_HAVE_LIBSTDCPLUSPLUS)
     #if !defined(__has_include)
         #error "Compiler does not support __has_include, please report a bug against the ArxTypeTraits library about this."
