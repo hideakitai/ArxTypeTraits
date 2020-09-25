@@ -377,7 +377,6 @@ namespace arx { namespace arx_std {
 
 
 #if __cplusplus < 201402L // C++11
-#if !defined(OF_VERSION_MAJOR) || !defined(TARGET_WIN32)
 
 namespace arx { namespace arx_std {
 
@@ -435,15 +434,12 @@ namespace arx { namespace arx_std {
 
 } } // namespace arx::arx_std
 
-#endif // !defined(OF_VERSION_MAJOR) || !defined(TARGET_WIN32)
 #endif // C++11
 
 
 #if __cplusplus < 201703L // C++14
 
 namespace arx { namespace arx_std {
-
-#if !defined(OF_VERSION_MAJOR) || !defined(TARGET_WIN32)
 
     template <class... Ts>
     struct Tester { using type = void; };
@@ -466,8 +462,6 @@ namespace arx { namespace arx_std {
 
     template <typename T>
     struct negation : integral_constant<bool, !T::value> {};
-
-#endif // !defined(OF_VERSION_MAJOR) || !defined(TARGET_WIN32)
 
     // https://qiita.com/_EnumHack/items/92e6e135174f1f781dbb
     // without decltype(auto)
