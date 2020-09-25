@@ -17,6 +17,9 @@
 #endif
 
 #ifndef ARX_TYPE_TRAITS_DISABLED
+    #include <utility>
+    #include <limits>
+    #include <initializer_list>
     #include <type_traits>
     #include <tuple>
     #include <functional>
