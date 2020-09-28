@@ -7,11 +7,10 @@
     #error "C++11 must be enabled in the compiler for this library to work, please check your compiler flags"
 #endif
 
+#include "ArxTypeTraits/has_include.h"
+
 #if !defined(ARX_HAVE_LIBSTDCPLUSPLUS)
-    #if !defined(__has_include)
-        #error "Compiler does not support __has_include, please report a bug against the ArxTypeTraits library about this."
-    #endif
-    #if __has_include(<cstdlib>)
+    #if ARX_SYSTEM_HAS_INCLUDE(<cstdlib>)
         #include <cstdlib>
         #if defined(__GLIBCXX__) || defined(_LIBCPP_VERSION)
             // For gcc's libstdc++ and clang's libc++, assume that

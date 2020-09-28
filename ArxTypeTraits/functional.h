@@ -14,7 +14,7 @@
 // new now, but will probably get it before <new> is added).
 // This also handles the case where ArduinoSTL is used, which defines an
 // inline placement new which would conflict with the below definition.
-#if __has_include(<new>)
+#if ARX_SYSTEM_HAS_INCLUDE(<new>)
 #include <new>
 #else
 // When there is no <new> header, there might be a <new.h> header, but
