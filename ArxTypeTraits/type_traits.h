@@ -145,8 +145,11 @@ namespace arx { namespace arx_std {
     template<class T, size_t N> struct remove_extent<T[N]> { typedef T type; };
 
 
-    template<class T>
-    T&& move(T& t){ return static_cast<T&&>(t); }
+    template <class T>
+    constexpr typename remove_reference<T>::type&& move(T&& t) noexcept
+    {
+        return static_cast<typename remove_reference<T>::type&&>(t);
+    }
 
 
     template <class T>
