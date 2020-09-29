@@ -1,6 +1,6 @@
 #include "ArxTypeTraits.h"
 
-#if 0// Check with standard libray or just ArxTypeTraits
+#if 1 // Check with standard libray or just ArxTypeTraits
 #if __AVR__
 #include <ArduinoSTL.h>
 #endif
