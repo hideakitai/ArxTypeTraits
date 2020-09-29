@@ -146,13 +146,6 @@ namespace arx { namespace arx_std {
 
 
     template <class T>
-    constexpr typename remove_reference<T>::type&& move(T&& t) noexcept
-    {
-        return static_cast<typename remove_reference<T>::type&&>(t);
-    }
-
-
-    template <class T>
     constexpr T&& forward(typename remove_reference<T>::type& t) noexcept
     {
         return static_cast<T&&>(t);
@@ -451,6 +444,11 @@ namespace arx { namespace arx_std {
     template<typename... Ts>
     using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
+    template <class T>
+    constexpr typename remove_reference<T>::type&& move(T&& t) noexcept
+    {
+        return static_cast<typename remove_reference<T>::type&&>(t);
+    }
 } } // namespace arx::arx_std
 
 #endif // Do not have libstdc++14
