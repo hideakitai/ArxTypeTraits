@@ -8,7 +8,7 @@ C++ type_traits for Arduino which cannot use it as default
 - automatically use standard library first if the boards can
 - if standard library is not enough (e.g. only C++11 is available), add missing parts listed below
 - works almost all Arduino platforms (Let me know if you have errors)
-- compatible with [ArduinoSTL](https://github.com/mike-matera/ArduinoSTL) or other [uClibc++](https://www.uclibc.org/) libraries (include them before `ArxTypeTraits`)
+- compatible with [ArduinoSTL](https://github.com/mike-matera/ArduinoSTL) or other [uClibc++](https://www.uclibc.org/) libraries
   - thx @matthijskooijman
 
 
