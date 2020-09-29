@@ -147,8 +147,6 @@ namespace arx { namespace arx_std {
 
     template<class T>
     T&& move(T& t){ return static_cast<T&&>(t); }
-    template<class T>
-    T&& move(T&& t){ return static_cast<T&&>(t); }
 
 
     template <class T>
