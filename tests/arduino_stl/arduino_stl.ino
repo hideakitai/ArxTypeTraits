@@ -15,7 +15,7 @@ std::function<void()> foo = []() {};
 // When using ArduinoSTL, this is *not* constexpr
 int y = std::numeric_limits<int>::max();
 // But this is :-D
-constexpr int z = arx::arx_std::numeric_limits<int>::max();
+constexpr int z = arx::stdx::numeric_limits<int>::max();
 
 // Check that void_t is available and not ambiguous
 using x = std::void_t<int>;
