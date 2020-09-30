@@ -381,6 +381,27 @@ namespace arx { namespace arx_std {
 
 #endif // Do not have libstdc++11
 
+
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201402L // Have libstdc++14
+
+#else // Do not have libstdc++14
+
+namespace arx { namespace arx_std {
+
+    // `move` must be declared before including `functional.h`
+    // C++14 constexpr version should be inside of C++14,
+    // but moved before `functional.h`
+    template <class T>
+    constexpr typename remove_reference<T>::type&& move(T&& t) noexcept
+    {
+        return static_cast<typename remove_reference<T>::type&&>(t);
+    }
+
+} } // namespace arx::arx_std
+
+#endif // Do not have libstdc++14
+
+
 #include "initializer_list.h"
 #include "tuple.h"
 #include "functional.h"
@@ -444,11 +465,6 @@ namespace arx { namespace arx_std {
     template<typename... Ts>
     using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
-    template <class T>
-    constexpr typename remove_reference<T>::type&& move(T&& t) noexcept
-    {
-        return static_cast<typename remove_reference<T>::type&&>(t);
-    }
 } } // namespace arx::arx_std
 
 #endif // Do not have libstdc++14
