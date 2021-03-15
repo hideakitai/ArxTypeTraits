@@ -9,7 +9,7 @@
 
 #else // Do not have libstdc++98
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     template <class T>
     void swap(T& a, T& b)
@@ -18,7 +18,7 @@ namespace arx { namespace stdx {
         a = move(b);
         b = move(t);
     }
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++98
 
@@ -34,7 +34,7 @@ namespace arx { namespace stdx {
 #include <limits.h>
 #include <stdint.h>
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     using nullptr_t = decltype(nullptr);
 
@@ -176,6 +176,10 @@ namespace arx { namespace stdx {
     struct is_same <T, T> : true_type {};
 
 
+    template<typename T>
+    struct is_void : is_same<void, typename remove_cv<T>::type> {};
+
+
     template <typename T>
     struct is_integral : false_type {};
     template <> struct is_integral <bool> : true_type {};
@@ -247,7 +251,7 @@ namespace arx { namespace stdx {
     struct is_array<T[N]> : true_type {};
 
 
-    namespace details
+    namespace detail
     {
         template <class... Ts>
         struct Tester { using type = void; };
@@ -262,12 +266,12 @@ namespace arx { namespace stdx {
         using try_convert = decltype(To{declval<From>()});
     }
     template<template<class...>class Z, class...Ts>
-    using can_apply = details::can_apply<Z, void, Ts...>;
+    using can_apply = detail::can_apply<Z, void, Ts...>;
 
     template<class From, class To>
     struct is_convertible
     : conditional <
-        can_apply <details::try_convert, From, To>::value
+        can_apply <detail::try_convert, From, To>::value
         , true_type
         , typename conditional <
             is_arithmetic<From>::value && is_arithmetic<To>::value,
@@ -359,7 +363,7 @@ namespace arx { namespace stdx {
     };
 
 
-    namespace details
+    namespace detail
     {
         template<class T> struct tag { using type=T; };
         template<class Tag> using type_t = typename Tag::type;
@@ -375,9 +379,9 @@ namespace arx { namespace stdx {
         {};
     }
     template<class Sig>
-    using result_of = details::result_of<Sig>;
+    using result_of = detail::result_of<Sig>;
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++11
 
@@ -386,7 +390,7 @@ namespace arx { namespace stdx {
 
 #else // Do not have libstdc++14
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     // `move` must be declared before including `functional.h`
     // C++14 constexpr version should be inside of C++14,
@@ -397,7 +401,7 @@ namespace arx { namespace stdx {
         return static_cast<typename remove_reference<T>::type&&>(t);
     }
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++14
 
@@ -411,7 +415,7 @@ namespace arx { namespace stdx {
     // for C++11  above.
 #else // Do not have libstdc++14
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     template <bool B, typename T = void>
     using enable_if_t = typename enable_if<B, T>::type;
@@ -465,7 +469,7 @@ namespace arx { namespace stdx {
     template<typename... Ts>
     using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++14
 
@@ -475,7 +479,16 @@ namespace arx { namespace stdx {
     // for C++11  above.
 #else // Do not have libstdc++17
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
+
+    template<bool B>
+    using bool_constant = integral_constant<bool, B>;
+	
+    template<typename T, typename U>
+    inline constexpr bool is_same_v = is_same<T, U>::value;
+    
+    template<typename T>
+    inline constexpr bool is_void_v = is_void<T>::value;
 
     template <class... Ts>
     struct Tester { using type = void; };
@@ -523,7 +536,7 @@ namespace arx { namespace stdx {
         );
     }
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++17
 
@@ -533,7 +546,7 @@ namespace arx { namespace stdx {
     // for C++11  above.
 #else // Do not have libstdc++2a
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     template<class T>
     struct remove_cvref
@@ -544,7 +557,7 @@ namespace arx { namespace stdx {
     template< class T >
     using remove_cvref_t = typename remove_cvref<T>::type;
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 #endif // Do not have libstdc++2a
 
 
