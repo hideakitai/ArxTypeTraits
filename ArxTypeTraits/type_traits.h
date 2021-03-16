@@ -252,6 +252,9 @@ namespace arx { namespace stdx {
     template<typename T> struct is_volatile : false_type {};
     template<typename T> struct is_volatile<volatile T> : true_type {};
 
+    template<typename T> struct is_reference : false_type {};
+    template<typename T> struct is_reference<T&> : true_type {};
+    template<typename T> struct is_reference<T&&> : true_type {};
 
     template<typename T> struct is_pointer_helper : false_type {};
     template<typename T> struct is_pointer_helper<T*> : true_type {};
@@ -614,6 +617,8 @@ namespace arx { namespace stdx {
     inline constexpr bool is_const_v = is_const<T>::value;
     template<typename T>
     inline constexpr bool is_volatile_v = is_volatile<T>::value;
+    template<typename T>
+    inline constexpr bool is_reference_v = is_reference<T>::value;
     template<typename T>
     inline constexpr bool is_pointer_v = is_pointer<T>::value;
     template<typename T>
