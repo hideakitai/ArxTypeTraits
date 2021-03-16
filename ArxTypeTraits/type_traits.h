@@ -414,10 +414,18 @@ namespace arx::stdx {
     template<typename T>
     struct is_scalar : integral_constant<bool,
         is_arithmetic<T>::value ||
-        /*is_enum<T> || // is_enum implementation needs compiler hooks*/
+        /*is_enum<T>::value || // is_enum implementation needs compiler hooks*/
         is_pointer<T>::value ||
         is_member_pointer<T>::value ||
         is_same<nullptr_t, typename remove_cv<T>::type>::value> {};
+
+
+    template<typename T>
+    struct is_object : integral_constant<bool,
+        is_scalar<T>::value ||
+        is_array<T>::value ||
+        /*is_union<T>::value || // is_union implementation needs compiler hooks*/
+        is_class<T>::value> {};
 
 } // namespace arx::stdx
 
@@ -543,6 +551,8 @@ namespace arx::stdx {
     inline constexpr bool is_scalar_v = is_scalar<T>::value;
     template<typename T>
     inline constexpr bool is_array_v = is_array<T>::value;
+    template<typename T>
+    inline constexpr bool is_object_v = is_object<T>::value;
 
     template <class... Ts>
     struct Tester { using type = void; };
