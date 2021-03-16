@@ -42,6 +42,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_function`
 - `std::is_empty`
 - `std::is_void`
+- `std::is_class`
 - `std::decay`
 - `std::result_of`
 
@@ -77,6 +78,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::bool_constant`
 - `std::is_same_v`
 - `std::is_void_v`
+- `std::is_class_v`
 - `std::void_t`
 - `std::disjunction`
 - `std::conjunction`
