@@ -126,6 +126,11 @@ namespace arx { namespace stdx {
     template<typename T> struct is_volatile<volatile T> : true_type {};
 
 
+    template<class T> struct add_cv       { using type = const volatile T; };
+    template<class T> struct add_const    { using type = const T; };
+    template<class T> struct add_volatile { using type = volatile T; };
+
+
     template<typename T> struct remove_cv                   { using type = T; };
     template<typename T> struct remove_cv<const T>          { using type = T; };
     template<typename T> struct remove_cv<volatile T>       { using type = T; };
@@ -147,9 +152,9 @@ namespace arx { namespace stdx {
     template<typename T> struct remove_reference<T&>  { using type = T; };
     template<typename T> struct remove_reference<T&&> { using type = T; };
 
-    template<typename T> struct remove_extent                 { typedef T type; };
-    template<typename T> struct remove_extent<T[]>            { typedef T type; };
-    template<typename T, size_t N> struct remove_extent<T[N]> { typedef T type; };
+    template<typename T> struct remove_extent                 { using type = T; };
+    template<typename T> struct remove_extent<T[]>            { using type = T; };
+    template<typename T, size_t N> struct remove_extent<T[N]> { using type = T; };
 
 
     template<typename T>
@@ -369,9 +374,9 @@ namespace arx { namespace stdx {
     template<typename T>
     class decay
     {
-        typedef typename remove_reference<T>::type U;
+        using U = typename remove_reference<T>::type;
     public:
-        typedef typename conditional<
+        using type = typename conditional<
             is_array<U>::value,
             typename remove_extent<U>::type*,
             typename conditional<
@@ -379,7 +384,7 @@ namespace arx { namespace stdx {
                 typename add_pointer<U>::type,
                 typename remove_cv<U>::type
             >::type
-        >::type type;
+        >::type;
     };
 
 
@@ -507,6 +512,13 @@ namespace arx { namespace stdx {
 
     template<typename T>
     using decay_t = typename decay<T>::type;
+
+    template<typename T>
+    using add_cv_t = typename add_cv<T>::type;
+    template<typename T>
+    using add_const_t = typename add_const<T>::type;
+    template<typename T>
+    using add_volatile_t = typename add_volatile<T>::type;
 
     template<typename T>
     using remove_cv_t = typename remove_cv<T>::type;
@@ -666,7 +678,7 @@ namespace arx { namespace stdx {
     template<typename T>
     struct remove_cvref
     {
-        typedef remove_cv_t<remove_reference_t<T>> type;
+        using type = remove_cv_t<remove_reference_t<T>>;
     };
 
     template<typename T>
