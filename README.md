@@ -81,6 +81,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_same_v`
 - `std::is_void_v`
 - `std::is_class_v`
+- `std::is_arithmetic_v`
+- `std::is_pointer_v`
 - `std::void_t`
 - `std::disjunction`
 - `std::conjunction`

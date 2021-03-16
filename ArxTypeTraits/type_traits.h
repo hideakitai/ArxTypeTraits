@@ -502,12 +502,14 @@ namespace arx::stdx {
 
     template<typename T, typename U>
     inline constexpr bool is_same_v = is_same<T, U>::value;
-
     template<typename T>
     inline constexpr bool is_void_v = is_void<T>::value;
-
     template<typename T>
     inline constexpr bool is_class_v = is_class<T>::value;
+    template<typename T>
+    inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
+    template<typename T>
+    inline constexpr bool is_pointer_v = is_pointer<T>::value;
 
     template <class... Ts>
     struct Tester { using type = void; };
