@@ -1,3 +1,5 @@
+Forked to add addtional traits I need. The original version is compatible with C++11, but this requires C++17 for inline variables and variable templates.
+
 # ArxTypeTraits
 
 C++ type_traits for Arduino which cannot use it as default
