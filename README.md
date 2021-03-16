@@ -24,6 +24,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::declval`
 - `std::enable_if`
 - `std::conditional`
+- `std::is_const`
+- `std::is_volatile`
 - `std::remove_cv`
 - `std::remove_const`
 - `std::remove_volatile`
@@ -85,6 +87,8 @@ C++ type_traits for Arduino which cannot use it as default
 ### C++17 (defined only for boards before C++17)
 
 - `std::bool_constant`
+- `std::is_const_v`
+- `std::is_volatile_v`
 - `std::is_same_v`
 - `std::is_void_v`
 - `std::is_class_v`

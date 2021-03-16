@@ -119,6 +119,13 @@ namespace arx { namespace stdx {
     struct conditional<false, T, F> { using type = F; };
 
 
+    template<typename T> struct is_const : false_type {};
+    template<typename T> struct is_const<const T> : true_type {};
+
+    template<typename T> struct is_volatile : false_type {};
+    template<typename T> struct is_volatile<volatile T> : true_type {};
+
+
     template<typename T> struct remove_cv                   { using type = T; };
     template<typename T> struct remove_cv<const T>          { using type = T; };
     template<typename T> struct remove_cv<volatile T>       { using type = T; };
@@ -238,7 +245,7 @@ namespace arx { namespace stdx {
     struct is_unsigned : detail::is_unsigned<T>::type {};
 
 
-    template<typename T> struct is_pointer_helper     : false_type {};
+    template<typename T> struct is_pointer_helper : false_type {};
     template<typename T> struct is_pointer_helper<T*> : true_type {};
     template<typename T> struct is_pointer : is_pointer_helper<typename remove_cv<T>::type> {};
 
@@ -567,6 +574,10 @@ namespace arx { namespace stdx {
     template<bool B>
     using bool_constant = integral_constant<bool, B>;
 
+    template<typename T>
+    inline constexpr bool is_const_v = is_const<T>::value;
+    template<typename T>
+    inline constexpr bool is_volatile_v = is_volatile<T>::value;
     template<typename T, typename U>
     inline constexpr bool is_same_v = is_same<T, U>::value;
     template<typename T>
