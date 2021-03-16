@@ -39,6 +39,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_signed`
 - `std::is_unsigned`
 - `std::is_pointer`
+- `std::is_member_pointer`
 - `std::is_array`
 - `std::is_convertible`
 - `std::is_function`
@@ -83,6 +84,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_class_v`
 - `std::is_arithmetic_v`
 - `std::is_pointer_v`
+- `std::is_member_pointer`
 - `std::void_t`
 - `std::disjunction`
 - `std::conjunction`
