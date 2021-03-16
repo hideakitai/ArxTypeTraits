@@ -668,9 +668,9 @@ namespace arx { namespace stdx {
 namespace arx { // others
 
     template<typename AlwaysVoid, template<typename...> class Check, typename... T>
-    struct is_detected_impl : std::false_type {};
+    struct is_detected_impl : stdx::false_type {};
     template<template<typename...> class Check, typename... T>
-    struct is_detected_impl <std::void_t<Check<T...>>, Check, T...> : std::true_type {};
+    struct is_detected_impl<stdx::void_t<Check<T...>>, Check, T...> : stdx::true_type {};
     template<template<typename...> class Check, typename... T>
     using is_detected = is_detected_impl<void, Check, T...>;
 
@@ -680,8 +680,8 @@ namespace arx { // others
     {
         template<typename U, decltype(&U::operator()) = &U::operator()>
         struct checker {};
-        template <typename U> static std::true_type  test(checker<U> *);
-        template <typename>   static std::false_type test(...);
+        template<typename U> static stdx::true_type  test(checker<U> *);
+        template<typename>   static stdx::false_type test(...);
         static constexpr bool value = decltype(test<T>(nullptr))::value;
     };
     template<typename R, typename... Arguments>
@@ -705,7 +705,7 @@ namespace arx { // others
         static constexpr bool value = true;
     };
     template<typename R, typename... Arguments>
-    struct is_callable<std::function<R(Arguments ...)>>
+    struct is_callable<stdx::function<R(Arguments...)>>
     {
         static constexpr bool value = true;
     };
@@ -718,10 +718,10 @@ namespace arx { // others
         {
             static constexpr size_t arity = sizeof...(arguments);
             using result_type = ret;
-            using arguments_types_tuple = std::tuple<arguments ...>;
+            using arguments_types_tuple = stdx::tuple<arguments...>;
             // template<size_t index>
             // using argument_type = type_at<index, arguments...>;
-            using function_type = std::function<ret(arguments ...)>;
+            using function_type = stdx::function<ret(arguments...)>;
             template<typename function_t>
             static constexpr function_type cast(function_t f)
             {
@@ -752,7 +752,7 @@ namespace arx { // others
         : detail::function_traits<ret, arguments...> {};
 
     template<typename ret, typename... arguments>
-    struct function_traits<std::function<ret(arguments ...)>>
+    struct function_traits<stdx::function<ret(arguments...)>>
         : detail::function_traits<ret, arguments...> {};
 
 } // namespace arx
