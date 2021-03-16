@@ -435,6 +435,28 @@ namespace arx::stdx {
     template<typename T, size_t N>
     struct rank<T[N]> : integral_constant<size_t, rank<T>::value + 1> {};
 
+
+    namespace detail {
+        template<typename B>
+        true_type test_pre_ptr_convertible(const volatile B*);
+
+        template<typename>
+        false_type test_pre_ptr_convertible(const volatile void*);
+
+        template<typename, typename>
+        auto test_pre_is_base_of(...) -> true_type;
+
+        template<typename B, typename D>
+        auto test_pre_is_base_of(int) ->
+            decltype(test_pre_ptr_convertible<B>(static_cast<D*>(nullptr)));
+    }
+
+    template<typename Base, typename Derived>
+    struct is_base_of : integral_constant<bool,
+        is_class<Base>::value &&
+        is_class<Derived>::value &&
+        decltype(detail::test_pre_is_base_of<Base, Derived>(0))::value> {};
+
 } // namespace arx::stdx
 
 #endif // Do not have libstdc++11
@@ -565,6 +587,8 @@ namespace arx::stdx {
     inline constexpr bool is_object_v = is_object<T>::value;
     template<typename T>
     inline constexpr bool is_function_v = is_function<T>::value;
+    template<typename Base, typename Derived>
+    inline constexpr bool is_base_of_v = is_base_of<Base, Derived>::value;
     template<typename T>
     inline constexpr size_t rank_v = rank<T>::value;
 
