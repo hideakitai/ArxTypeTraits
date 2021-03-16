@@ -1,4 +1,4 @@
-Forked to add addtional traits I need. The original version is compatible with C++11, but this requires C++17 for inline variables and variable templates.
+Forked to add addtional traits I need. Requires C++17 for inline variables and variable templates.
 
 # ArxTypeTraits
 
