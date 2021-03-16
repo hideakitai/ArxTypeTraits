@@ -398,7 +398,7 @@ namespace arx::stdx {
     namespace detail {
         // is_union implementation needs compiler hooks
         // https://github.com/Quuxplusone/from-scratch/blob/master/include/scratch/bits/type-traits/compiler-magic.md
-        //bool_constant<!is_union_v<T>> test(int T::*);
+        //integral_constant<bool, !is_union<T>::value> test(int T::*);
 
         template<typename T>
         integral_constant<bool, true> test(int T::*);
@@ -409,6 +409,15 @@ namespace arx::stdx {
 
     template<typename T>
     struct is_class : decltype(detail::test<T>(nullptr)) {};
+
+    
+    template<typename T>
+    struct is_scalar : integral_constant<bool,
+        is_arithmetic<T>::value ||
+        /*is_enum<T> || // is_enum implementation needs compiler hooks*/
+        is_pointer<T>::value ||
+        is_member_pointer<T>::value ||
+        is_same<nullptr_t, typename remove_cv<T>::type>::value> {};
 
 } // namespace arx::stdx
 
@@ -530,6 +539,10 @@ namespace arx::stdx {
     inline constexpr bool is_member_pointer_v = is_member_pointer<T>::value;
     template<typename T>
     inline constexpr bool is_null_pointer_v = is_null_pointer<T>::value;
+    template<typename T>
+    inline constexpr bool is_scalar_v = is_scalar<T>::value;
+    template<typename T>
+    inline constexpr bool is_array_v = is_array<T>::value;
 
     template <class... Ts>
     struct Tester { using type = void; };
