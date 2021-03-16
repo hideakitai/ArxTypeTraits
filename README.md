@@ -44,6 +44,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_unsigned`
 - `std::is_const`
 - `std::is_volatile`
+- `std::is_reference`
 - `std::is_pointer`
 - `std::is_member_pointer`
 - `std::is_array`
@@ -102,6 +103,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_arithmetic_v`
 - `std::is_const_v`
 - `std::is_volatile_v`
+- `std::is_reference_v`
 - `std::is_pointer_v`
 - `std::is_member_pointer_v`
 - `std::is_null_pointer_v`
@@ -123,6 +125,10 @@ C++ type_traits for Arduino which cannot use it as default
 
 - `std::remove_cvref`
 - `std::remove_cvref_t`
+- `std::is_bounded_array`
+- `std::is_bounded_array_v`
+- `std::is_unbounded_array`
+- `std::is_unbounded_array_v`
 
 
 ### Others (defined for all boards)

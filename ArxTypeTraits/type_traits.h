@@ -3,26 +3,6 @@
 #ifndef ARX_TYPE_TRAITS_TYPE_TRAITS_H
 #define ARX_TYPE_TRAITS_TYPE_TRAITS_H
 
-#if ARX_HAVE_LIBSTDCPLUSPLUS >= 199711L // Have libstdc++98
-
-#include <utility>
-
-#else // Do not have libstdc++98
-
-namespace arx { namespace stdx {
-
-    template<typename T>
-    void swap(T& a, T& b)
-    {
-        T t = move(a);
-        a = move(b);
-        b = move(t);
-    }
-} } // namespace arx::stdx
-
-#endif // Do not have libstdc++98
-
-
 #if ARX_HAVE_LIBSTDCPLUSPLUS >= 201103L // Have libstdc++11
 
 #include <limits>
@@ -34,7 +14,7 @@ namespace arx { namespace stdx {
 #include <limits.h>
 #include <stdint.h>
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     using nullptr_t = decltype(nullptr);
 
@@ -488,7 +468,7 @@ namespace arx { namespace stdx {
     template<typename T, size_t I, unsigned N>
     struct extent<T[I], N> : extent<T, N - 1> {};
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++11
 
@@ -497,7 +477,7 @@ namespace arx { namespace stdx {
 
 #else // Do not have libstdc++14
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     // `move` must be declared before including `functional.h`
     // C++14 constexpr version should be inside of C++14,
@@ -508,7 +488,7 @@ namespace arx { namespace stdx {
         return static_cast<typename remove_reference<T>::type&&>(t);
     }
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++14
 
@@ -517,12 +497,31 @@ namespace arx { namespace stdx {
 #include "tuple.h"
 #include "functional.h"
 
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 199711L // Have libstdc++98
+
+#include <utility>
+
+#else // Do not have libstdc++98
+
+namespace arx::stdx {
+
+    template<typename T>
+    void swap(T& a, T& b)
+    {
+        T t = move(a);
+        a = move(b);
+        b = move(t);
+    }
+} // namespace arx::stdx
+
+#endif // Do not have libstdc++98
+
 #if ARX_HAVE_LIBSTDCPLUSPLUS >= 201402L // Have libstdc++14
     // Nothing to include here, relevant header files were already included
     // for C++11  above.
 #else // Do not have libstdc++14
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     template<bool B, typename T = void>
     using enable_if_t = typename enable_if<B, T>::type;
@@ -590,7 +589,7 @@ namespace arx { namespace stdx {
     template<typename T>
     struct is_null_pointer : is_same<nullptr_t, remove_cv_t<T>> {};
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++14
 
@@ -600,7 +599,7 @@ namespace arx { namespace stdx {
     // for C++11  above.
 #else // Do not have libstdc++17
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     template<bool B>
     using bool_constant = integral_constant<bool, B>;
@@ -686,7 +685,7 @@ namespace arx { namespace stdx {
         );
     }
 
-} } // namespace arx::stdx
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++17
 
@@ -696,7 +695,7 @@ namespace arx { namespace stdx {
     // for C++11  above.
 #else // Do not have libstdc++2a
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     template<typename T>
     struct remove_cvref
@@ -707,7 +706,23 @@ namespace arx { namespace stdx {
     template<typename T>
     using remove_cvref_t = typename remove_cvref<T>::type;
 
-} } // namespace arx::stdx
+    template<typename T>
+    struct is_bounded_array : false_type {};
+    template<typename T, size_t N>
+    struct is_bounded_array<T[N]> : true_type {};
+
+    template<typename T>
+    inline constexpr bool is_bounded_array_v = is_bounded_array<T>::value;
+
+    template<class T>
+    struct is_unbounded_array : false_type {};
+    template<class T>
+    struct is_unbounded_array<T[]> : true_type {};
+
+    template<typename T>
+    inline constexpr bool is_unbounded_array_v = is_unbounded_array<T>::value;
+
+} // namespace arx::stdx
 #endif // Do not have libstdc++2a
 
 
