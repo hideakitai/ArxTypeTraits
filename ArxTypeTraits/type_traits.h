@@ -498,6 +498,9 @@ namespace arx::stdx {
     template<typename... Ts>
     using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
+    template<typename T>
+    struct is_null_pointer : is_same<nullptr_t, remove_cv_t<T>> {};
+
 } // namespace arx::stdx
 
 #endif // Do not have libstdc++14
@@ -525,7 +528,8 @@ namespace arx::stdx {
     inline constexpr bool is_pointer_v = is_pointer<T>::value;
     template<typename T>
     inline constexpr bool is_member_pointer_v = is_member_pointer<T>::value;
-
+    template<typename T>
+    inline constexpr bool is_null_pointer_v = is_null_pointer<T>::value;
 
     template <class... Ts>
     struct Tester { using type = void; };

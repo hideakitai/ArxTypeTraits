@@ -74,6 +74,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::index_sequence`
 - `std::make_index_sequence`
 - `std::index_sequence_for`
+- `std::is_null_pointer`
 
 
 ### C++17 (defined only for boards before C++17)
@@ -84,7 +85,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_class_v`
 - `std::is_arithmetic_v`
 - `std::is_pointer_v`
-- `std::is_member_pointer`
+- `std::is_member_pointer_v`
+- `std::is_null_pointer_v`
 - `std::void_t`
 - `std::disjunction`
 - `std::conjunction`
