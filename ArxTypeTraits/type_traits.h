@@ -381,6 +381,22 @@ namespace arx::stdx {
     template<class Sig>
     using result_of = detail::result_of<Sig>;
 
+
+    namespace detail {
+        // is_union implementation needs compiler hooks
+        // https://github.com/Quuxplusone/from-scratch/blob/master/include/scratch/bits/type-traits/compiler-magic.md
+        //bool_constant<!is_union_v<T>> test(int T::*);
+
+        template<typename T>
+        integral_constant<bool, true> test(int T::*);
+
+        template<typename>
+        false_type test(...);
+    }
+
+    template<typename T>
+    struct is_class : decltype(detail::test<T>(nullptr)) {};
+
 } // namespace arx::stdx
 
 #endif // Do not have libstdc++11
@@ -483,12 +499,15 @@ namespace arx::stdx {
 
     template<bool B>
     using bool_constant = integral_constant<bool, B>;
-	
+
     template<typename T, typename U>
     inline constexpr bool is_same_v = is_same<T, U>::value;
-    
+
     template<typename T>
     inline constexpr bool is_void_v = is_void<T>::value;
+
+    template<typename T>
+    inline constexpr bool is_class_v = is_class<T>::value;
 
     template <class... Ts>
     struct Tester { using type = void; };
