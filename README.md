@@ -26,9 +26,9 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::conditional`
 - `std::is_const`
 - `std::is_volatile`
-- `std::add_cv_t`
-- `std::add_const_t`
-- `std::add_volatile_t`
+- `std::add_cv`
+- `std::add_const`
+- `std::add_volatile`
 - `std::remove_cv`
 - `std::remove_const`
 - `std::remove_volatile`
