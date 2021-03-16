@@ -243,6 +243,19 @@ namespace arx::stdx {
     template <class T> struct is_pointer : is_pointer_helper<typename remove_cv<T>::type> {};
 
 
+    namespace detail
+    {
+        template<typename>
+        struct is_member_pointer_helper : false_type {};
+
+        template<typename T, typename U>
+        struct is_member_pointer_helper<T U::*> : true_type {};
+    }
+
+    template<typename T>
+    struct is_member_pointer : detail::is_member_pointer_helper<typename remove_cv<T>::type> {};
+
+
     template<class T>
     struct is_array : false_type {};
     template<class T>
@@ -510,6 +523,9 @@ namespace arx::stdx {
     inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
     template<typename T>
     inline constexpr bool is_pointer_v = is_pointer<T>::value;
+    template<typename T>
+    inline constexpr bool is_member_pointer_v = is_member_pointer<T>::value;
+
 
     template <class... Ts>
     struct Tester { using type = void; };
