@@ -50,6 +50,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_object`
 - `std::decay`
 - `std::result_of`
+- `std::rank`
 
 
 #### for utility
@@ -72,6 +73,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::remove_volatile_t`
 - `std::remove_reference_t`
 - `std::remove_pointer_t`
+- `std::remove_extent_t`
 - `std::integer_sequence`
 - `std::index_sequence`
 - `std::make_index_sequence`
@@ -92,6 +94,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_scalar_v`
 - `std::is_array_v`
 - `std::is_object_v`
+- `std::is_function_v`
+- `std::rank_v`
 - `std::void_t`
 - `std::disjunction`
 - `std::conjunction`

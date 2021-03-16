@@ -427,6 +427,14 @@ namespace arx::stdx {
         /*is_union<T>::value || // is_union implementation needs compiler hooks*/
         is_class<T>::value> {};
 
+
+    template<typename>
+    struct rank : integral_constant<size_t, 0> {};
+    template<typename T>
+    struct rank<T[]> : integral_constant<size_t, rank<T>::value + 1> {};
+    template<typename T, size_t N>
+    struct rank<T[N]> : integral_constant<size_t, rank<T>::value + 1> {};
+
 } // namespace arx::stdx
 
 #endif // Do not have libstdc++11
@@ -479,6 +487,8 @@ namespace arx::stdx {
     using remove_reference_t = typename remove_reference<T>::type;
     template<class T>
     using remove_pointer_t = typename remove_pointer<T>::type;
+    template<typename T>
+    using remove_extent_t = typename remove_extent<T>::type;
 
     template<typename T, T ...Ts>
     struct integer_sequence
@@ -553,6 +563,10 @@ namespace arx::stdx {
     inline constexpr bool is_array_v = is_array<T>::value;
     template<typename T>
     inline constexpr bool is_object_v = is_object<T>::value;
+    template<typename T>
+    inline constexpr bool is_function_v = is_function<T>::value;
+    template<typename T>
+    inline constexpr size_t rank_v = rank<T>::value;
 
     template <class... Ts>
     struct Tester { using type = void; };
