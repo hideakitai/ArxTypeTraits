@@ -30,6 +30,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::remove_pointer`
 - `std::remove_reference`
 - `std::remove_extent`
+- `std::remove_all_extents`
 - `std::add_cv`
 - `std::add_const`
 - `std::add_volatile`
@@ -81,6 +82,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::remove_reference_t`
 - `std::remove_pointer_t`
 - `std::remove_extent_t`
+- `std::remove_all_extents_t`
 - `std::add_cv_t`
 - `std::add_const_t`
 - `std::add_volatile_t`
