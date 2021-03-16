@@ -24,17 +24,15 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::declval`
 - `std::enable_if`
 - `std::conditional`
-- `std::is_const`
-- `std::is_volatile`
-- `std::add_cv`
-- `std::add_const`
-- `std::add_volatile`
 - `std::remove_cv`
 - `std::remove_const`
 - `std::remove_volatile`
 - `std::remove_pointer`
 - `std::remove_reference`
 - `std::remove_extent`
+- `std::add_cv`
+- `std::add_const`
+- `std::add_volatile`
 - `std::add_pointer`
 - `std::forward`
 - `std::is_same`
@@ -43,6 +41,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_arithmetic`
 - `std::is_signed`
 - `std::is_unsigned`
+- `std::is_const`
+- `std::is_volatile`
 - `std::is_pointer`
 - `std::is_member_pointer`
 - `std::is_array`
@@ -57,6 +57,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::decay`
 - `std::result_of`
 - `std::rank`
+- `std::extent`
 
 
 #### for utility
@@ -74,15 +75,15 @@ C++ type_traits for Arduino which cannot use it as default
 
 - `std::enable_if_t`
 - `std::decay_t`
-- `std::add_cv_t`
-- `std::add_const_t`
-- `std::add_volatile_t`
 - `std::remove_cv_t`
 - `std::remove_const_t`
 - `std::remove_volatile_t`
 - `std::remove_reference_t`
 - `std::remove_pointer_t`
 - `std::remove_extent_t`
+- `std::add_cv_t`
+- `std::add_const_t`
+- `std::add_volatile_t`
 - `std::integer_sequence`
 - `std::index_sequence`
 - `std::make_index_sequence`
@@ -93,12 +94,12 @@ C++ type_traits for Arduino which cannot use it as default
 ### C++17 (defined only for boards before C++17)
 
 - `std::bool_constant`
-- `std::is_const_v`
-- `std::is_volatile_v`
 - `std::is_same_v`
 - `std::is_void_v`
 - `std::is_class_v`
 - `std::is_arithmetic_v`
+- `std::is_const_v`
+- `std::is_volatile_v`
 - `std::is_pointer_v`
 - `std::is_member_pointer_v`
 - `std::is_null_pointer_v`
@@ -108,6 +109,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_function_v`
 - `std::is_base_of_v`
 - `std::rank_v`
+- `std::extent_v`
 - `std::void_t`
 - `std::disjunction`
 - `std::conjunction`

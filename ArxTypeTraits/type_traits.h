@@ -119,18 +119,6 @@ namespace arx { namespace stdx {
     struct conditional<false, T, F> { using type = F; };
 
 
-    template<typename T> struct is_const : false_type {};
-    template<typename T> struct is_const<const T> : true_type {};
-
-    template<typename T> struct is_volatile : false_type {};
-    template<typename T> struct is_volatile<volatile T> : true_type {};
-
-
-    template<class T> struct add_cv       { using type = const volatile T; };
-    template<class T> struct add_const    { using type = const T; };
-    template<class T> struct add_volatile { using type = volatile T; };
-
-
     template<typename T> struct remove_cv                   { using type = T; };
     template<typename T> struct remove_cv<const T>          { using type = T; };
     template<typename T> struct remove_cv<volatile T>       { using type = T; };
@@ -157,6 +145,23 @@ namespace arx { namespace stdx {
     template<typename T, size_t N> struct remove_extent<T[N]> { using type = T; };
 
 
+    template<typename T> struct add_cv { using type = const volatile T; };
+    template<typename T> struct add_const { using type = const T; };
+    template<typename T> struct add_volatile { using type = volatile T; };
+
+    namespace detail
+    {
+        template<typename T>
+        struct type_identity { using type = T; };
+        template<typename T>
+        auto try_add_pointer(int)->type_identity<typename remove_reference<T>::type*>;
+        template<typename T>
+        auto try_add_pointer(...)->type_identity<T>;
+    }
+    template<typename T>
+    struct add_pointer : decltype(detail::try_add_pointer<T>(0)) {};
+
+
     template<typename T>
     constexpr T&& forward(typename remove_reference<T>::type& t) noexcept
     {
@@ -167,19 +172,6 @@ namespace arx { namespace stdx {
     {
         return static_cast<T&&>(t);
     }
-
-
-    namespace detail
-    {
-        template<typename T>
-        struct type_identity { using type = T; };
-        template<typename T>
-        auto try_add_pointer(int) -> type_identity<typename remove_reference<T>::type*>;
-        template<typename T>
-        auto try_add_pointer(...) -> type_identity<T>;
-    }
-    template<typename T>
-    struct add_pointer : decltype(detail::try_add_pointer<T>(0)) {};
 
 
     template<typename T, typename U>
@@ -250,6 +242,13 @@ namespace arx { namespace stdx {
     struct is_unsigned : detail::is_unsigned<T>::type {};
 
 
+    template<typename T> struct is_const : false_type {};
+    template<typename T> struct is_const<const T> : true_type {};
+
+    template<typename T> struct is_volatile : false_type {};
+    template<typename T> struct is_volatile<volatile T> : true_type {};
+
+
     template<typename T> struct is_pointer_helper : false_type {};
     template<typename T> struct is_pointer_helper<T*> : true_type {};
     template<typename T> struct is_pointer : is_pointer_helper<typename remove_cv<T>::type> {};
@@ -290,7 +289,7 @@ namespace arx { namespace stdx {
         template<typename From, typename To>
         using try_convert = decltype(To{declval<From>()});
     }
-    template<template<typename...> class Z, typename...Ts>
+    template<template<typename...> class Z, typename... Ts>
     using can_apply = detail::can_apply<Z, void, Ts...>;
 
     template<typename From, typename To>
@@ -371,42 +370,6 @@ namespace arx { namespace stdx {
     struct is_empty : public integral_constant<bool, __is_empty(T)> {};
 
 
-    template<typename T>
-    class decay
-    {
-        using U = typename remove_reference<T>::type;
-    public:
-        using type = typename conditional<
-            is_array<U>::value,
-            typename remove_extent<U>::type*,
-            typename conditional<
-                is_function<U>::value,
-                typename add_pointer<U>::type,
-                typename remove_cv<U>::type
-            >::type
-        >::type;
-    };
-
-
-    namespace detail
-    {
-        template<typename T> struct tag { using type=T; };
-        template<typename Tag> using type_t = typename Tag::type;
-
-        template<typename G, typename...Args>
-        using invoke_t = decltype(declval<G>()(declval<Args>()...));
-
-        template<typename Sig, typename = void>
-        struct result_of {};
-        template<typename G, typename...Args>
-        struct result_of<G(Args...), void_t<invoke_t<G, Args...>>>
-            : tag<invoke_t<G, Args...>>
-        {};
-    }
-    template<typename Sig>
-    using result_of = detail::result_of<Sig>;
-
-
     namespace detail
     {
         // is_union implementation needs compiler hooks
@@ -441,14 +404,6 @@ namespace arx { namespace stdx {
         is_class<T>::value> {};
 
 
-    template<typename>
-    struct rank : integral_constant<size_t, 0> {};
-    template<typename T>
-    struct rank<T[]> : integral_constant<size_t, rank<T>::value + 1> {};
-    template<typename T, size_t N>
-    struct rank<T[N]> : integral_constant<size_t, rank<T>::value + 1> {};
-
-
     namespace detail
     {
         template<typename B>
@@ -458,7 +413,7 @@ namespace arx { namespace stdx {
         false_type test_pre_ptr_convertible(const volatile void*);
 
         template<typename, typename>
-        auto test_pre_is_base_of(...) -> true_type;
+        auto test_pre_is_base_of(...)->true_type;
 
         template<typename B, typename D>
         auto test_pre_is_base_of(int) ->
@@ -467,9 +422,64 @@ namespace arx { namespace stdx {
 
     template<typename Base, typename Derived>
     struct is_base_of : integral_constant<bool,
-        is_class<Base>::value &&
-        is_class<Derived>::value &&
+        is_class<Base>::value&&
+        is_class<Derived>::value&&
         decltype(detail::test_pre_is_base_of<Base, Derived>(0))::value> {};
+
+
+    template<typename T>
+    class decay
+    {
+        using U = typename remove_reference<T>::type;
+    public:
+        using type = typename conditional<
+            is_array<U>::value,
+            typename remove_extent<U>::type*,
+            typename conditional<
+            is_function<U>::value,
+            typename add_pointer<U>::type,
+            typename remove_cv<U>::type
+            >::type
+        >::type;
+    };
+
+
+    namespace detail
+    {
+        template<typename T> struct tag { using type = T; };
+        template<typename Tag> using type_t = typename Tag::type;
+
+        template<typename G, typename...Args>
+        using invoke_t = decltype(declval<G>()(declval<Args>()...));
+
+        template<typename Sig, typename = void>
+        struct result_of {};
+        template<typename G, typename...Args>
+        struct result_of<G(Args...), void_t<invoke_t<G, Args...>>>
+            : tag<invoke_t<G, Args...>>
+        {};
+    }
+    template<typename Sig>
+    using result_of = detail::result_of<Sig>;
+
+
+    template<typename>
+    struct rank : integral_constant<size_t, 0> {};
+    template<typename T>
+    struct rank<T[]> : integral_constant<size_t, rank<T>::value + 1> {};
+    template<typename T, size_t N>
+    struct rank<T[N]> : integral_constant<size_t, rank<T>::value + 1> {};
+
+    template<typename T, unsigned N = 0>
+    struct extent : integral_constant<size_t, 0> {};
+    template<typename T>
+    struct extent<T[], 0> : integral_constant<size_t, 0> {};
+    template<typename T, unsigned N>
+    struct extent<T[], N> : extent<T, N - 1> {};
+    template<typename T, size_t I>
+    struct extent<T[I], 0> : integral_constant<size_t, I> {};
+    template<typename T, size_t I, unsigned N>
+    struct extent<T[I], N> : extent<T, N - 1> {};
 
 } } // namespace arx::stdx
 
@@ -514,13 +524,6 @@ namespace arx { namespace stdx {
     using decay_t = typename decay<T>::type;
 
     template<typename T>
-    using add_cv_t = typename add_cv<T>::type;
-    template<typename T>
-    using add_const_t = typename add_const<T>::type;
-    template<typename T>
-    using add_volatile_t = typename add_volatile<T>::type;
-
-    template<typename T>
     using remove_cv_t = typename remove_cv<T>::type;
     template<typename T>
     using remove_const_t = typename remove_const<T>::type;
@@ -532,6 +535,13 @@ namespace arx { namespace stdx {
     using remove_pointer_t = typename remove_pointer<T>::type;
     template<typename T>
     using remove_extent_t = typename remove_extent<T>::type;
+
+    template<typename T>
+    using add_cv_t = typename add_cv<T>::type;
+    template<typename T>
+    using add_const_t = typename add_const<T>::type;
+    template<typename T>
+    using add_volatile_t = typename add_volatile<T>::type;
 
     template<typename T, T... Ts>
     struct integer_sequence
@@ -586,10 +596,6 @@ namespace arx { namespace stdx {
     template<bool B>
     using bool_constant = integral_constant<bool, B>;
 
-    template<typename T>
-    inline constexpr bool is_const_v = is_const<T>::value;
-    template<typename T>
-    inline constexpr bool is_volatile_v = is_volatile<T>::value;
     template<typename T, typename U>
     inline constexpr bool is_same_v = is_same<T, U>::value;
     template<typename T>
@@ -598,6 +604,10 @@ namespace arx { namespace stdx {
     inline constexpr bool is_class_v = is_class<T>::value;
     template<typename T>
     inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
+    template<typename T>
+    inline constexpr bool is_const_v = is_const<T>::value;
+    template<typename T>
+    inline constexpr bool is_volatile_v = is_volatile<T>::value;
     template<typename T>
     inline constexpr bool is_pointer_v = is_pointer<T>::value;
     template<typename T>
@@ -616,6 +626,8 @@ namespace arx { namespace stdx {
     inline constexpr bool is_base_of_v = is_base_of<Base, Derived>::value;
     template<typename T>
     inline constexpr size_t rank_v = rank<T>::value;
+    template<typename T, unsigned N = 0>
+    inline constexpr size_t extent_v = extent<T, N>::value;
 
     template<typename... Ts>
     struct Tester { using type = void; };
