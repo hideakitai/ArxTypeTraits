@@ -1,4 +1,4 @@
-Forked to add traits as I find them useful.
+Forked to add traits as I find them useful. Requires C++17.
 
 # ArxTypeTraits
 
@@ -45,6 +45,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_const`
 - `std::is_volatile`
 - `std::is_reference`
+- `std::is_lvalue_reference`
+- `std::is_rvalue_reference`
 - `std::is_pointer`
 - `std::is_member_pointer`
 - `std::is_array`
@@ -87,6 +89,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::add_cv_t`
 - `std::add_const_t`
 - `std::add_volatile_t`
+- `std::add_pointer_t`
 - `std::integer_sequence`
 - `std::index_sequence`
 - `std::make_index_sequence`
@@ -104,6 +107,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::is_const_v`
 - `std::is_volatile_v`
 - `std::is_reference_v`
+- `std::is_lvalue_reference_v`
+- `std::is_rvalue_reference_v`
 - `std::is_pointer_v`
 - `std::is_member_pointer_v`
 - `std::is_null_pointer_v`
