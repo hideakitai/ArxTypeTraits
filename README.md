@@ -35,6 +35,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::add_const`
 - `std::add_volatile`
 - `std::add_pointer`
+- `std::add_lvalue_reference`
+- `std::add_rvalue_reference`
 - `std::forward`
 - `std::is_same`
 - `std::is_integral`
@@ -90,6 +92,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::add_const_t`
 - `std::add_volatile_t`
 - `std::add_pointer_t`
+- `std::add_lvalue_reference_t`
+- `std::add_rvalue_reference_t`
 - `std::integer_sequence`
 - `std::index_sequence`
 - `std::make_index_sequence`
@@ -128,6 +132,7 @@ C++ type_traits for Arduino which cannot use it as default
 
 ### C++2a
 
+- `std::type_identity`
 - `std::remove_cvref`
 - `std::remove_cvref_t`
 - `std::is_bounded_array`

@@ -137,13 +137,31 @@ namespace arx::stdx {
     {
         template<typename T>
         struct type_identity { using type = T; };
+
         template<typename T>
-        auto try_add_pointer(int)->type_identity<typename remove_reference<T>::type*>;
+        auto try_add_pointer(int) -> type_identity<typename remove_reference<T>::type*>;
         template<typename T>
-        auto try_add_pointer(...)->type_identity<T>;
+        auto try_add_pointer(...) -> type_identity<T>;
+
+        template<typename T>
+        auto try_add_lvalue_reference(int) -> type_identity<T&>;
+        template<typename T>
+        auto try_add_lvalue_reference(...) -> type_identity<T>;
+
+        template<typename T>
+        auto try_add_rvalue_reference(int) -> type_identity<T&&>;
+        template<typename T>
+        auto try_add_rvalue_reference(...) -> type_identity<T>;
     }
+
     template<typename T>
     struct add_pointer : decltype(detail::try_add_pointer<T>(0)) {};
+
+    template<typename T>
+    struct add_lvalue_reference : decltype(detail::try_add_lvalue_reference<T>(0)) {};
+
+    template<typename T>
+    struct add_rvalue_reference : decltype(detail::try_add_rvalue_reference<T>(0)) {};
 
 
     template<typename T>
@@ -558,6 +576,10 @@ namespace arx::stdx {
     using add_volatile_t = typename add_volatile<T>::type;
     template<typename T>
     using add_pointer_t = typename add_pointer<T>::type;
+    template<typename T>
+    using add_lvalue_reference_t = typename add_lvalue_reference<T>::type;
+    template<typename T>
+    using add_rvalue_reference_t = typename add_rvalue_reference<T>::type;
 
     template<typename T, T... Ts>
     struct integer_sequence
@@ -708,6 +730,9 @@ namespace arx::stdx {
 #else // Do not have libstdc++2a
 
 namespace arx::stdx {
+
+    template<typename T>
+    struct type_identity { using type = T; };
 
     template<typename T>
     struct remove_cvref
