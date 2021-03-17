@@ -550,6 +550,8 @@ namespace arx::stdx {
     using add_const_t = typename add_const<T>::type;
     template<typename T>
     using add_volatile_t = typename add_volatile<T>::type;
+    template<typename T>
+    using add_pointer_t = typename add_pointer<T>::type;
 
     template<typename T, T... Ts>
     struct integer_sequence
