@@ -133,6 +133,7 @@ C++ type_traits for Arduino which cannot use it as default
 ### C++2a
 
 - `std::type_identity`
+- `std::type_identity_t`
 - `std::remove_cvref`
 - `std::remove_cvref_t`
 - `std::is_bounded_array`
