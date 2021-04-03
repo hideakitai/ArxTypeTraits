@@ -64,6 +64,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::result_of`
 - `std::rank`
 - `std::extent`
+- `std::addressof`
 
 
 #### for utility
@@ -128,6 +129,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::conjunction`
 - `std::negation`
 - `std::apply`
+- `invoke_result`
+- `invoke_result_t`
 
 
 ### C++2a

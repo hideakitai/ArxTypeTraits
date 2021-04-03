@@ -492,6 +492,21 @@ namespace arx::stdx {
     template<typename T, size_t I, unsigned N>
     struct extent<T[I], N> : extent<T, N - 1> {};
 
+
+    template<typename T>
+    auto addressof(T& arg) noexcept
+        -> typename enable_if<is_object<T>::value, T*>::type
+    {
+        return reinterpret_cast<T*>(&const_cast<char&>(reinterpret_cast<const volatile char&>(arg)));
+    }
+
+    template<typename T>
+    auto addressof(T& arg) noexcept
+        -> typename enable_if<!is_object<T>::value, T*>::type
+    {
+        return &arg;
+    }
+
 } // namespace arx::stdx
 
 #endif // Do not have libstdc++11
@@ -719,6 +734,118 @@ namespace arx::stdx {
         );
     }
 
+    template<typename>
+    class reference_wrapper;
+
+    namespace detail
+    {
+        template<typename>
+        struct is_reference_wrapper : false_type {};
+
+        template<typename U>
+        struct is_reference_wrapper<reference_wrapper<U>> : true_type {};
+
+        template<typename U>
+        inline constexpr bool is_reference_wrapper_v = is_reference_wrapper<U>::value;
+
+        template<typename>
+        struct invoke_impl
+        {
+            template<typename F, typename... Args>
+            static auto call(F&& f, Args&&... args)
+                -> decltype(forward<F>(f)(forward<Args>(args)...));
+        };
+
+        template<typename B, typename MT>
+        struct invoke_impl<MT B::*>
+        {
+            template<typename T, typename Td = decay_t<T>,
+                typename = enable_if_t<is_base_of_v<B, Td>>
+            >
+            static auto get(T&& t)->T&&;
+
+            template<typename T, typename Td = decay_t<T>,
+                typename = enable_if_t<is_reference_wrapper_v<Td>>
+            >
+            static auto get(T&& t) -> decltype(t.get());
+
+            template<typename T, typename Td = decay_t<T>,
+                typename = enable_if_t<!is_base_of_v<B, Td>>,
+                typename = enable_if_t<!is_reference_wrapper_v<Td>>
+            >
+            static auto get(T&& t) -> decltype(*forward<T>(t));
+
+            template<typename T, typename... Args, typename MT1,
+                typename = enable_if_t<is_function_v<MT1>>
+            >
+            static auto call(MT1 B::* pmf, T&& t, Args&&... args)
+                -> decltype((invoke_impl::get(forward<T>(t)).*pmf)(forward<Args>(args)...));
+
+            template<typename T>
+            static auto call(MT B::* pmd, T&& t)
+                -> decltype(invoke_impl::get(forward<T>(t)).*pmd);
+        };
+
+        template<typename F, typename... Args, typename Fd = decay_t<F>>
+        auto INVOKE(F&& f, Args&&... args)
+            -> decltype(invoke_impl<Fd>::call(forward<F>(f), forward<Args>(args)...));
+
+        template<typename AlwaysVoid, typename, typename...>
+        struct invoke_result { };
+
+        template<typename F, typename...Args>
+        struct invoke_result<decltype(void(INVOKE(declval<F>(), declval<Args>()...))), F, Args...>
+        {
+            using type = decltype(INVOKE(declval<F>(), declval<Args>()...));
+        };
+    }
+
+    template<typename F, typename... Args>
+    struct invoke_result : detail::invoke_result<void, F, Args...> {};
+
+    template<typename F, typename... Args>
+    using invoke_result_t = typename invoke_result<F, Args...>::type;
+    
+    namespace detail
+    {
+        template<typename T> constexpr T& FUN(T& t) noexcept { return t; }
+        template<typename T> void FUN(T&&) = delete;
+    }
+
+    // reference_wrapper was introduced in c++11, but this is a c++17 implementation
+    template<typename T>
+    class reference_wrapper
+    {
+    public:
+        using type = T;
+
+        template<typename U, typename = decltype(
+            detail::FUN<T>(declval<U>()),
+            enable_if_t<!is_same_v<reference_wrapper, remove_cv_t<remove_reference_t<U>>>>()
+            )>
+        constexpr reference_wrapper(U&& u) noexcept(noexcept(detail::FUN<T>(forward<U>(u))))
+            : m_ptr(addressof(detail::FUN<T>(forward<U>(u)))) {}
+
+        reference_wrapper(const reference_wrapper&) noexcept = default;
+
+        reference_wrapper& operator=(const reference_wrapper& x) noexcept = default;
+
+        constexpr operator T& () const noexcept { return *m_ptr; }
+        constexpr T& get() const noexcept { return *m_ptr; }
+
+        template<typename... Args>
+        constexpr invoke_result<T&, Args...> operator() (Args&&... args) const
+        {
+            return invoke(get(), forward<Args>(args)...);
+        }
+
+    private:
+        T* m_ptr;
+    };
+
+    //template<typename T>
+    //reference_wrapper(T&) -> reference_wrapper<T>;
+    
 } // namespace arx::stdx
 
 #endif // Do not have libstdc++17
