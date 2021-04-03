@@ -129,8 +129,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::conjunction`
 - `std::negation`
 - `std::apply`
-- `invoke_result`
-- `invoke_result_t`
+- `std::invoke_result`
+- `std::invoke_result_t`
 
 
 ### C++2a
