@@ -76,6 +76,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::get`
 - `std::tuple_size`
 - `std::function`
+- `std::as_const`
 
 
 ### C++14 (defined only for boards before C++14)
@@ -129,8 +130,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::conjunction`
 - `std::negation`
 - `std::apply`
-- `invoke_result`
-- `invoke_result_t`
+- `std::invoke_result`
+- `std::invoke_result_t`
 
 
 ### C++2a

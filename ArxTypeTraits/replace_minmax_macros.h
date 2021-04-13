@@ -15,18 +15,18 @@
 // them with macros here.
 #ifdef max
     #undef max
-    template <typename T1, typename T2>
+    template<typename T1, typename T2>
     constexpr auto max(T1 x, T2 y)
-    -> decltype(x + y)
+        -> decltype(x + y)
     {
         return (x > y) ? x : y;
     }
 #endif
 #ifdef min
     #undef min
-    template <typename T1, typename T2>
+    template<typename T1, typename T2>
     constexpr auto min(T1 x, T2 y)
-    -> decltype(x + y)
+        -> decltype(x + y)
     {
         return (x < y) ? x : y;
     }

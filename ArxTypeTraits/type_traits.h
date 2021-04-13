@@ -126,7 +126,7 @@ namespace arx::stdx {
 
     template<typename T> struct remove_all_extents              { using type = T; };
     template<typename T> struct remove_all_extents<T[]>         { using type = typename remove_all_extents<T>::type; };
-    template<class T, size_t N> struct remove_all_extents<T[N]> { using type = typename remove_all_extents<T>::type; };
+    template<typename T, size_t N> struct remove_all_extents<T[N]> { using type = typename remove_all_extents<T>::type; };
 
 
     template<typename T> struct add_cv { using type = const volatile T; };
@@ -214,11 +214,11 @@ namespace arx::stdx {
 
     template<typename T>
     struct is_arithmetic
-    : conditional<
-        is_integral<T>::value || is_floating_point<T>::value,
-        true_type,
-        false_type
-    >::type
+        : conditional<
+            is_integral<T>::value || is_floating_point<T>::value,
+            true_type,
+            false_type
+        >::type
     {};
 
 
@@ -306,9 +306,9 @@ namespace arx::stdx {
     template<typename From, typename To>
     struct is_convertible
         : conditional<
-            can_apply<detail::try_convert, From, To>::value
-            , true_type
-            , typename conditional<
+            can_apply<detail::try_convert, From, To>::value,
+            true_type,
+            typename conditional<
                 is_arithmetic<From>::value && is_arithmetic<To>::value,
                 true_type,
                 false_type
@@ -441,17 +441,19 @@ namespace arx::stdx {
     template<typename T>
     class decay
     {
-        using U = typename remove_reference<T>::type;
     public:
         using type = typename conditional<
             is_array<U>::value,
             typename remove_extent<U>::type*,
             typename conditional<
-            is_function<U>::value,
-            typename add_pointer<U>::type,
-            typename remove_cv<U>::type
+                is_function<U>::value,
+                typename add_pointer<U>::type,
+                typename remove_cv<U>::type
             >::type
         >::type;
+
+    private:
+        using U = typename remove_reference<T>::type;
     };
 
 
@@ -881,15 +883,16 @@ namespace arx::stdx {
     template<typename T>
     inline constexpr bool is_bounded_array_v = is_bounded_array<T>::value;
 
-    template<class T>
+    template<typename T>
     struct is_unbounded_array : false_type {};
-    template<class T>
+    template<typename T>
     struct is_unbounded_array<T[]> : true_type {};
 
     template<typename T>
     inline constexpr bool is_unbounded_array_v = is_unbounded_array<T>::value;
 
 } // namespace arx::stdx
+
 #endif // Do not have libstdc++2a
 
 

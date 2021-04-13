@@ -9,7 +9,7 @@
 
 #else // Do not have libstdc++11
 
-namespace arx { namespace stdx {
+namespace arx::stdx {
 
     // https://theolizer.com/cpp-school2/cpp-school2-15/
     // https://wandbox.org/permlink/C0BWIzjqg4iO3kKZ
@@ -20,62 +20,68 @@ namespace arx { namespace stdx {
         tuple() {}
     };
 
-    template<typename tFirst, typename... tRest>
-    class tuple<tFirst, tRest...> : public tuple<tRest...>
+    template<typename TFirst, typename... TRest>
+    class tuple<TFirst, TRest...> : public tuple<TRest...>
     {
-        template<size_t N, typename... tTypes> friend struct get_helper;
-        tFirst  mMember;
     public:
-        tuple(tFirst const& iFirst, tRest const&... iRest)
-        : tuple<tRest...>(iRest...)
-        , mMember(iFirst)
-        { }
+        tuple(TFirst const& iFirst, TRest const&... iRest)
+            : tuple<TRest...>(iRest...),
+              mMember(iFirst)
+        {
+        }
+
         constexpr tuple() {}
+
+    private:
+        template<size_t N, typename... TTypes>
+        friend struct get_helper;
+
+        TFirst mMember;
     };
 
-    template<size_t N, typename... tTypes>
+    template<size_t N, typename... TTypes>
     struct get_helper { };
-    template<typename tFirst, typename... tRest>
-    struct get_helper<0, tFirst, tRest...>
+    template<typename TFirst, typename... TRest>
+    struct get_helper<0, TFirst, TRest...>
     {
-        typedef tFirst type;
-        static type& get(tuple<tFirst, tRest...>& iTuple)
+        typedef TFirst type;
+        static type& get(tuple<TFirst, TRest...>& iTuple)
         {
             return iTuple.mMember;
         }
     };
-    template<size_t N, typename tFirst, typename... tRest>
-    struct get_helper<N, tFirst, tRest...>
+    template<size_t N, typename TFirst, typename... TRest>
+    struct get_helper<N, TFirst, TRest...>
     {
-        typedef typename get_helper<N - 1, tRest...>::type type;
-        static type& get(tuple<tFirst, tRest...>& iTuple)
+        typedef typename get_helper<N - 1, TRest...>::type type;
+        static type& get(tuple<TFirst, TRest...>& iTuple)
         {
-            return get_helper<N - 1, tRest...>::get(iTuple);
+            return get_helper<N - 1, TRest...>::get(iTuple);
         }
     };
 
-    template<size_t N, typename... tTypes>
-    typename get_helper<N, tTypes...>::type& get(tuple<tTypes...>& iTuple)
+    template<size_t N, typename... TTypes>
+    typename get_helper<N, TTypes...>::type& get(tuple<TTypes...>& iTuple)
     {
-        return get_helper<N, tTypes...>::get(iTuple);
+        return get_helper<N, TTypes...>::get(iTuple);
     }
 
-    template <class T> class tuple_size;
-    template <class T> class tuple_size<const T>;
-    template <class T> class tuple_size<volatile T>;
-    template <class T> class tuple_size<const volatile T>;
-    template <class... Types>
-    class tuple_size <tuple<Types...>>
-    : public integral_constant <size_t, sizeof...(Types)> {};
+    template<typename T> class tuple_size;
+    template<typename T> class tuple_size<const T>;
+    template<typename T> class tuple_size<volatile T>;
+    template<typename T> class tuple_size<const volatile T>;
+    template<typename... Types>
+    struct tuple_size<tuple<Types...>>
+        : integral_constant<size_t, sizeof...(Types)> {};
 
-    template <class... Types>
+    template<typename... Types>
     auto make_tuple(Types&&... args)
-    -> std::tuple<typename std::remove_reference<Types>::type...>
+        -> std::tuple<typename std::remove_reference<Types>::type...>
     {
         return std::tuple<typename std::remove_reference<Types>::type...>(std::forward<typename std::remove_reference<Types>::type>(args)...);
     }
 
-} } // namespace arx::std
+} // namespace arx::stdx
 
 #endif // Do not have libstdc++11
 
