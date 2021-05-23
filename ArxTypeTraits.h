@@ -19,8 +19,10 @@ namespace std { }
 // This includes everything yet to be defined, so we can do this early
 // (and must do so, to allow e.g. the C++14 additions in the arx::std
 // namespace to reference the C++11 stuff from the system headers.
-namespace arx::stdx {
-    using namespace ::std;
+namespace arx {
+    namespace stdx {
+        using namespace ::std;
+    }
 }
 
 // Import everything from arx::std back into the normal std namespace.

@@ -28,21 +28,56 @@
 inline void* operator new (const size_t size, void* ptr) noexcept { (void)size; return ptr; }
 #endif
 
-namespace arx::stdx {
+namespace arx { namespace stdx {
 
     // reference:
     // stack overflow https://stackoverflow.com/questions/32074410/stdfunction-bind-like-type-erasure-without-standard-c-library
 
-    template<typename Signature>
+    template<class Signature>
     class function;
 
-    template<typename R, typename... Args>
+    template<class R, class... Args>
     class function<R(Args...)>
     {
+        struct vtable_t
+        {
+            void (*mover)(void* src, void* dest);
+            void (*destroyer)(void*);
+            R (*invoke)(void const* t, Args&&... args);
+
+            template <class T>
+            static vtable_t const* get()
+            {
+                static const vtable_t table =
+                {
+                    // mover
+                    [] (void* src, void* dest)
+                    {
+                        new(dest) T(move(*static_cast<T*>(src)));
+                    },
+                    // destroyer
+                    [] (void* t)
+                    {
+                        static_cast<T*>(t)->~T();
+                    },
+                    // invoke
+                    [] (void const* t, Args&&... args) -> R
+                    {
+                        return (*static_cast<T const*>(t))(std::forward<Args>(args)...);
+                    }
+                };
+                return &table;
+            }
+        };
+
+        vtable_t const* table {nullptr};
+        void* data {nullptr};
+
     public:
-        template<
-            typename Func,
-            typename dF = typename std::decay<Func>::type,
+
+        template <
+            class Func,
+            class dF = typename std::decay<Func>::type,
             typename enable_if <!std::is_same<dF, function>{}>::type* = nullptr,
             typename enable_if <std::is_convertible<typename result_of<dF&(Args...)>::type, R>{}>::type* = nullptr
         >
@@ -69,19 +104,19 @@ namespace arx::stdx {
             if (table) table->destroyer(data);
         }
 
-        function& operator=(const function& o)
+        function& operator= (const function& o)
         {
             this->~function();
             new(this) function(move(o));
             return *this;
         }
-        function& operator=(function&& o)
+        function& operator= (function&& o)
         {
             this->~function();
             new(this) function(move(o));
             return *this;
         }
-        function& operator=(std::nullptr_t p)
+        function& operator= (std::nullptr_t p)
         {
             (void)p;
             this->~function();
@@ -97,68 +132,33 @@ namespace arx::stdx {
         {
             return table->invoke(data, forward<Args>(args)...);
         }
-        
-    private:
-        struct vtable_t
-        {
-            void (*mover)(void* src, void* dest);
-            void (*destroyer)(void*);
-            R (*invoke)(void const* t, Args&&... args);
-
-            template<typename T>
-            static vtable_t const* get()
-            {
-                static const vtable_t table =
-                {
-                    // mover
-                    [] (void* src, void* dest)
-                    {
-                        new(dest) T(move(*static_cast<T*>(src)));
-                    },
-                    // destroyer
-                    [] (void* t)
-                    {
-                        static_cast<T*>(t)->~T();
-                    },
-                    // invoke
-                    [] (void const* t, Args&&... args) -> R
-                    {
-                        return (*static_cast<T const*>(t))(std::forward<Args>(args)...);
-                    }
-                };
-                return &table;
-            }
-        };
-
-        vtable_t const* table{ nullptr };
-        void* data{ nullptr };
     };
 
-    template<typename R, typename... Args>
-    inline bool operator==(const function<R(Args...)>& f, std::nullptr_t)
+    template<class R, class... Args>
+    inline bool operator== (const function<R(Args...)>& f, std::nullptr_t)
     {
         return !static_cast<bool>(f);
     }
 
-    template<typename R, typename... Args>
-    inline bool operator==(std::nullptr_t, const function<R(Args...)>& f)
+    template<class R, class... Args>
+    inline bool operator== (std::nullptr_t, const function<R(Args...)>& f)
     {
         return !static_cast<bool>(f);
     }
 
-    template<typename R, typename... Args>
-    inline bool operator!=(const function<R(Args...)>& f, std::nullptr_t)
+    template<class R, class... Args>
+    inline bool operator!= (const function<R(Args...)>& f, std::nullptr_t)
     {
         return static_cast<bool>(f);
     }
 
-    template<typename R, typename... Args>
-    inline bool operator!=(std::nullptr_t, const function<R(Args...)>& f)
+    template<class R, class... Args>
+    inline bool operator!= (std::nullptr_t, const function<R(Args...)>& f)
     {
         return static_cast<bool>(f);
     }
 
-} // namespace arx::stdx
+} } // namespace arx::std
 
 #endif // Do not have libstdc++11
 
