@@ -177,8 +177,8 @@ namespace arx { namespace stdx {
     template <class T>
     struct add_pointer : decltype(detail::try_add_pointer<T>(0)) {};
 
-	namespace detail
-	{
+    namespace detail
+    {
         template<typename T>
         auto try_add_lvalue_reference(int) -> type_identity<T&>;
         template<typename T>
