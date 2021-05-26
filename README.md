@@ -1,5 +1,3 @@
-Forked to add traits as I find them useful. Requires C++17.
-
 # ArxTypeTraits
 
 C++ type_traits for Arduino which cannot use it as default
