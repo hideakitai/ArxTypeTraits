@@ -63,6 +63,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::rank`
 - `std::extent`
 - `std::addressof`
+- `std::reference_wrapper`
 
 
 #### for utility

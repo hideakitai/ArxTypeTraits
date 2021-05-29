@@ -454,8 +454,8 @@ namespace arx { namespace stdx {
 
     template<typename Base, typename Derived>
     struct is_base_of : integral_constant<bool,
-        is_class<Base>::value&&
-        is_class<Derived>::value&&
+        is_class<Base>::value &&
+        is_class<Derived>::value &&
         decltype(detail::test_pre_is_base_of<Base, Derived>(0))::value> {};
 
 
@@ -527,6 +527,28 @@ namespace arx { namespace stdx {
     {
         return &arg;
     }
+    
+    
+    template<typename T>
+    class reference_wrapper
+    {
+    public:
+        using type = T;
+
+        reference_wrapper(T& ref) noexcept : m_ptr(addressof(ref)) {}
+        reference_wrapper(T&&) = delete;
+        reference_wrapper(const reference_wrapper&) noexcept = default;
+
+        reference_wrapper& operator= (const reference_wrapper& x) noexcept = default;
+
+        constexpr operator T& () const noexcept { return *m_ptr; }
+        constexpr T& get() const noexcept { return *m_ptr; }
+
+        // call-wrapping operator() omitted
+
+    private:
+        T* m_ptr;
+    };
 
 } } // namespace arx::stdx
 
@@ -736,9 +758,6 @@ namespace arx { namespace stdx {
         );
     }
 
-    template<typename>
-    class reference_wrapper;
-
     namespace detail
     {
         template<typename>
@@ -807,46 +826,6 @@ namespace arx { namespace stdx {
 
     template<typename F, typename... Args>
     using invoke_result_t = typename invoke_result<F, Args...>::type;
-    
-    namespace detail
-    {
-        template<typename T> constexpr T& FUN(T& t) noexcept { return t; }
-        template<typename T> void FUN(T&&) = delete;
-    }
-
-    // reference_wrapper was introduced in c++11, but this is a c++17 implementation
-    template<typename T>
-    class reference_wrapper
-    {
-    public:
-        using type = T;
-
-        template<typename U, typename = decltype(
-            detail::FUN<T>(declval<U>()),
-            enable_if_t<!is_same_v<reference_wrapper, remove_cv_t<remove_reference_t<U>>>>()
-            )>
-        constexpr reference_wrapper(U&& u) noexcept(noexcept(detail::FUN<T>(forward<U>(u))))
-            : m_ptr(addressof(detail::FUN<T>(forward<U>(u)))) {}
-
-        reference_wrapper(const reference_wrapper&) noexcept = default;
-
-        reference_wrapper& operator=(const reference_wrapper& x) noexcept = default;
-
-        constexpr operator T& () const noexcept { return *m_ptr; }
-        constexpr T& get() const noexcept { return *m_ptr; }
-
-        template<typename... Args>
-        constexpr invoke_result<T&, Args...> operator() (Args&&... args) const
-        {
-            return invoke(get(), forward<Args>(args)...);
-        }
-
-    private:
-        T* m_ptr;
-    };
-
-    //template<typename T>
-    //reference_wrapper(T&) -> reference_wrapper<T>;
     
     template<typename T>
     constexpr add_const_t<T>& as_const(T& val) noexcept
