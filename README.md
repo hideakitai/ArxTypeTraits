@@ -63,7 +63,6 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::rank`
 - `std::extent`
 - `std::addressof`
-- `std::reference_wrapper`
 
 
 #### for utility
@@ -75,6 +74,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::get`
 - `std::tuple_size`
 - `std::function`
+- `std::reference_wrapper`
 - `std::as_const`
 
 
