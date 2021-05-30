@@ -75,6 +75,8 @@ C++ type_traits for Arduino which cannot use it as default
 - `std::tuple_size`
 - `std::function`
 - `std::reference_wrapper`
+- `std::ref`
+- `std::cref`
 - `std::as_const`
 
 
