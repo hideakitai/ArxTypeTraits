@@ -550,6 +550,14 @@ namespace arx { namespace stdx {
         T* m_ptr;
     };
 
+    template<typename T> reference_wrapper<T> ref(T& t) noexcept { return reference_wrapper<T>(t); }
+    template<typename T> reference_wrapper<T> ref(reference_wrapper<T> t) noexcept { return ref(t.get()); }
+    template<typename T> void ref(const T&&) = delete;
+
+    template<typename T> reference_wrapper<const T> cref(const T& t) noexcept { return reference_wrapper<const T>(t); }
+    template<typename T> reference_wrapper<const T> cref(reference_wrapper<T> t) noexcept { return cref(t.get()); }
+    template<typename T> void cref(const T&&) = delete;
+
 } } // namespace arx::stdx
 
 #endif // Do not have libstdc++11
