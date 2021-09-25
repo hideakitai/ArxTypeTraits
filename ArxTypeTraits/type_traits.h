@@ -536,7 +536,7 @@ namespace arx { namespace stdx {
         using type = T;
 
         reference_wrapper(T& ref) noexcept : m_ptr(addressof(ref)) {}
-        reference_wrapper(T&&) = delete;
+        reference_wrapper(T&&) = delete; // as prior to LWG2993
         reference_wrapper(const reference_wrapper&) noexcept = default;
 
         reference_wrapper& operator= (const reference_wrapper& x) noexcept = default;
