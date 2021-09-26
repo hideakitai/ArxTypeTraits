@@ -681,6 +681,7 @@ namespace arx { namespace stdx {
     template<bool B>
     using bool_constant = integral_constant<bool, B>;
 
+#if __cplusplus >= 201703L
     template<typename T, typename U>
     inline constexpr bool is_same_v = is_same<T, U>::value;
     template<typename T>
@@ -719,6 +720,7 @@ namespace arx { namespace stdx {
     inline constexpr size_t rank_v = rank<T>::value;
     template<typename T, unsigned N = 0>
     inline constexpr size_t extent_v = extent<T, N>::value;
+#endif
 
     template <class... Ts>
     struct Tester { using type = void; };
@@ -774,9 +776,6 @@ namespace arx { namespace stdx {
         template<typename U>
         struct is_reference_wrapper<reference_wrapper<U>> : true_type {};
 
-        template<typename U>
-        inline constexpr bool is_reference_wrapper_v = is_reference_wrapper<U>::value;
-
         template<typename>
         struct invoke_impl
         {
@@ -789,23 +788,23 @@ namespace arx { namespace stdx {
         struct invoke_impl<MT B::*>
         {
             template<typename T, typename Td = decay_t<T>,
-                typename = enable_if_t<is_base_of_v<B, Td>>
+                typename = enable_if_t<is_base_of<B, Td>::value>
             >
             static auto get(T&& t)->T&&;
 
             template<typename T, typename Td = decay_t<T>,
-                typename = enable_if_t<is_reference_wrapper_v<Td>>
+                typename = enable_if_t<is_reference_wrapper<Td>::value>
             >
             static auto get(T&& t) -> decltype(t.get());
 
             template<typename T, typename Td = decay_t<T>,
-                typename = enable_if_t<!is_base_of_v<B, Td>>,
-                typename = enable_if_t<!is_reference_wrapper_v<Td>>
+                typename = enable_if_t<!is_base_of<B, Td>::value>,
+                typename = enable_if_t<!is_reference_wrapper<Td>::value>
             >
             static auto get(T&& t) -> decltype(*forward<T>(t));
 
             template<typename T, typename... Args, typename MT1,
-                typename = enable_if_t<is_function_v<MT1>>
+                typename = enable_if_t<is_function<MT1>::value>
             >
             static auto call(MT1 B::* pmf, T&& t, Args&&... args)
                 -> decltype((invoke_impl::get(forward<T>(t)).*pmf)(forward<Args>(args)...));
@@ -877,15 +876,17 @@ namespace arx { namespace stdx {
     struct is_bounded_array<T[N]> : true_type {};
 
     template<typename T>
-    inline constexpr bool is_bounded_array_v = is_bounded_array<T>::value;
-
-    template<typename T>
     struct is_unbounded_array : false_type {};
     template<typename T>
     struct is_unbounded_array<T[]> : true_type {};
 
+#if __cplusplus >= 201703L
+    template<typename T>
+    inline constexpr bool is_bounded_array_v = is_bounded_array<T>::value;
+
     template<typename T>
     inline constexpr bool is_unbounded_array_v = is_unbounded_array<T>::value;
+#endif
 
 } } // namespace arx::stdx
 #endif // Do not have libstdc++2a
