@@ -153,7 +153,7 @@ C++ type_traits for Arduino which cannot use it as default
 - `arx::is_callable`
 - `arx::function_traits`
 
-(Traits ending in _v are defined only when compiled as C++17 or higher)
+(Traits with the _v suffix are defined only when compiled as C++17 or higher)
 
 ## Used Inside of
 
