@@ -410,7 +410,9 @@ namespace arx { namespace stdx {
     {
         // is_union implementation needs compiler hooks
         // https://github.com/Quuxplusone/from-scratch/blob/master/include/scratch/bits/type-traits/compiler-magic.md
-        //integral_constant<bool, !is_union<T>::value> test(int T::*);
+        
+		//template<typename T>
+		//integral_constant<bool, !is_union<T>::value> test(int T::*);
 
         template<typename T>
         integral_constant<bool, true> test(int T::*);
@@ -449,7 +451,7 @@ namespace arx { namespace stdx {
         false_type test_pre_ptr_convertible(const volatile void*);
 
         template<typename, typename>
-        auto test_pre_is_base_of(...)->true_type;
+        auto test_pre_is_base_of(...) -> true_type;
 
         template<typename B, typename D>
         auto test_pre_is_base_of(int) ->
@@ -724,7 +726,7 @@ namespace arx { namespace stdx {
     inline constexpr size_t rank_v = rank<T>::value;
     template<typename T, unsigned N = 0>
     inline constexpr size_t extent_v = extent<T, N>::value;
-#endif
+#endif // C++17 supported
 
     template <class... Ts>
     struct Tester { using type = void; };
@@ -794,7 +796,7 @@ namespace arx { namespace stdx {
             template<typename T, typename Td = decay_t<T>,
                 typename = enable_if_t<is_base_of<B, Td>::value>
             >
-            static auto get(T&& t)->T&&;
+            static auto get(T&& t) -> T&&;
 
             template<typename T, typename Td = decay_t<T>,
                 typename = enable_if_t<is_reference_wrapper<Td>::value>
@@ -887,10 +889,9 @@ namespace arx { namespace stdx {
 #if __cplusplus >= 201703L
     template<typename T>
     inline constexpr bool is_bounded_array_v = is_bounded_array<T>::value;
-
     template<typename T>
     inline constexpr bool is_unbounded_array_v = is_unbounded_array<T>::value;
-#endif
+#endif // C++17 supported
 
 } } // namespace arx::stdx
 #endif // Do not have libstdc++2a
