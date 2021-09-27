@@ -411,8 +411,8 @@ namespace arx { namespace stdx {
         // is_union implementation needs compiler hooks
         // https://github.com/Quuxplusone/from-scratch/blob/master/include/scratch/bits/type-traits/compiler-magic.md
         
-		//template<typename T>
-		//integral_constant<bool, !is_union<T>::value> test(int T::*);
+        //template<typename T>
+        //integral_constant<bool, !is_union<T>::value> test(int T::*);
 
         template<typename T>
         integral_constant<bool, true> test(int T::*);
