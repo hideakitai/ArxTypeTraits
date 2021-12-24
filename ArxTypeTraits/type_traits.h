@@ -349,7 +349,7 @@ namespace arx { namespace stdx {
     struct is_function<Ret(Args...)> : true_type {};
     // specialization for variadic functions such as printf
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......)> : true_type {};
+    struct is_function<Ret(Args..., ...)> : true_type {};
     // specialization for function types that have cv-qualifiers
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) const> : true_type {};
@@ -358,11 +358,11 @@ namespace arx { namespace stdx {
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) const volatile> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const> : true_type {};
+    struct is_function<Ret(Args..., ...) const> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) volatile> : true_type {};
+    struct is_function<Ret(Args..., ...) volatile> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const volatile> : true_type {};
+    struct is_function<Ret(Args..., ...) const volatile> : true_type {};
     // specialization for function types that have ref-qualifiers
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) &> : true_type {};
@@ -373,13 +373,13 @@ namespace arx { namespace stdx {
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) const volatile &> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) &> : true_type {};
+    struct is_function<Ret(Args..., ...) &> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const &> : true_type {};
+    struct is_function<Ret(Args..., ...) const &> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) volatile &> : true_type {};
+    struct is_function<Ret(Args..., ...) volatile &> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const volatile &> : true_type {};
+    struct is_function<Ret(Args..., ...) const volatile &> : true_type {};
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) &&> : true_type {};
     template<class Ret, class... Args>
@@ -389,13 +389,13 @@ namespace arx { namespace stdx {
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) const volatile &&> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) &&> : true_type {};
+    struct is_function<Ret(Args..., ...) &&> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const &&> : true_type {};
+    struct is_function<Ret(Args..., ...) const &&> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) volatile &&> : true_type {};
+    struct is_function<Ret(Args..., ...) volatile &&> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const volatile &&> : true_type {};
+    struct is_function<Ret(Args..., ...) const volatile &&> : true_type {};
 
 
     template<typename T>
