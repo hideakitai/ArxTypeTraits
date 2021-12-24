@@ -687,7 +687,7 @@ namespace arx { namespace stdx {
     template<bool B>
     using bool_constant = integral_constant<bool, B>;
 
-#if __cplusplus >= 201703L
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201703L
     template<typename T, typename U>
     inline constexpr bool is_same_v = is_same<T, U>::value;
     template<typename T>
@@ -886,7 +886,7 @@ namespace arx { namespace stdx {
     template<typename T>
     struct is_unbounded_array<T[]> : true_type {};
 
-#if __cplusplus >= 201703L
+#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201703L
     template<typename T>
     inline constexpr bool is_bounded_array_v = is_bounded_array<T>::value;
     template<typename T>
