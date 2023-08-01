@@ -160,6 +160,14 @@ namespace arx { namespace stdx {
         return static_cast<T&&>(t);
     }
 
+    template<typename T> struct remove_all_extents              { using type = T; };
+    template<typename T> struct remove_all_extents<T[]>         { using type = typename remove_all_extents<T>::type; };
+    template<typename T, size_t N> struct remove_all_extents<T[N]> { using type = typename remove_all_extents<T>::type; };
+
+
+    template<typename T> struct add_cv { using type = const volatile T; };
+    template<typename T> struct add_const { using type = const T; };
+    template<typename T> struct add_volatile { using type = volatile T; };
 
     namespace detail
     {
@@ -172,6 +180,25 @@ namespace arx { namespace stdx {
     }
     template <class T>
     struct add_pointer : decltype(detail::try_add_pointer<T>(0)) {};
+
+    namespace detail
+    {
+        template<typename T>
+        auto try_add_lvalue_reference(int) -> type_identity<T&>;
+        template<typename T>
+        auto try_add_lvalue_reference(...) -> type_identity<T>;
+
+        template<typename T>
+        auto try_add_rvalue_reference(int) -> type_identity<T&&>;
+        template<typename T>
+        auto try_add_rvalue_reference(...) -> type_identity<T>;
+    }
+
+    template<typename T>
+    struct add_lvalue_reference : decltype(detail::try_add_lvalue_reference<T>(0)) {};
+
+    template<typename T>
+    struct add_rvalue_reference : decltype(detail::try_add_rvalue_reference<T>(0)) {};
 
 
     template <typename T, typename U>
@@ -238,9 +265,38 @@ namespace arx { namespace stdx {
     struct is_unsigned : detail::is_unsigned<T>::type {};
 
 
+    template<typename T> struct is_const : false_type {};
+    template<typename T> struct is_const<const T> : true_type {};
+
+    template<typename T> struct is_volatile : false_type {};
+    template<typename T> struct is_volatile<volatile T> : true_type {};
+
+    template<typename T> struct is_reference : false_type {};
+    template<typename T> struct is_reference<T&> : true_type {};
+    template<typename T> struct is_reference<T&&> : true_type {};
+
+    template<typename T> struct is_lvalue_reference : false_type {};
+    template<typename T> struct is_lvalue_reference<T&> : true_type {};
+
+    template<typename T> struct is_rvalue_reference : false_type {};
+    template<typename T> struct is_rvalue_reference<T&&> : true_type {};
+
     template <class T> struct is_pointer_helper     : false_type {};
     template <class T> struct is_pointer_helper<T*> : true_type {};
     template <class T> struct is_pointer : is_pointer_helper<typename remove_cv<T>::type> {};
+
+
+    namespace detail
+    {
+        template<typename>
+        struct is_member_pointer_helper : false_type {};
+
+        template<typename T, typename U>
+        struct is_member_pointer_helper<T U::*> : true_type {};
+    }
+
+    template<typename T>
+    struct is_member_pointer : detail::is_member_pointer_helper<typename remove_cv<T>::type> {};
 
 
     template<class T>
@@ -293,7 +349,7 @@ namespace arx { namespace stdx {
     struct is_function<Ret(Args...)> : true_type {};
     // specialization for variadic functions such as printf
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......)> : true_type {};
+    struct is_function<Ret(Args..., ...)> : true_type {};
     // specialization for function types that have cv-qualifiers
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) const> : true_type {};
@@ -302,11 +358,11 @@ namespace arx { namespace stdx {
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) const volatile> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const> : true_type {};
+    struct is_function<Ret(Args..., ...) const> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) volatile> : true_type {};
+    struct is_function<Ret(Args..., ...) volatile> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const volatile> : true_type {};
+    struct is_function<Ret(Args..., ...) const volatile> : true_type {};
     // specialization for function types that have ref-qualifiers
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) &> : true_type {};
@@ -317,13 +373,13 @@ namespace arx { namespace stdx {
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) const volatile &> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) &> : true_type {};
+    struct is_function<Ret(Args..., ...) &> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const &> : true_type {};
+    struct is_function<Ret(Args..., ...) const &> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) volatile &> : true_type {};
+    struct is_function<Ret(Args..., ...) volatile &> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const volatile &> : true_type {};
+    struct is_function<Ret(Args..., ...) const volatile &> : true_type {};
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) &&> : true_type {};
     template<class Ret, class... Args>
@@ -333,17 +389,80 @@ namespace arx { namespace stdx {
     template<class Ret, class... Args>
     struct is_function<Ret(Args...) const volatile &&> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) &&> : true_type {};
+    struct is_function<Ret(Args..., ...) &&> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const &&> : true_type {};
+    struct is_function<Ret(Args..., ...) const &&> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) volatile &&> : true_type {};
+    struct is_function<Ret(Args..., ...) volatile &&> : true_type {};
     template<class Ret, class... Args>
-    struct is_function<Ret(Args......) const volatile &&> : true_type {};
+    struct is_function<Ret(Args..., ...) const volatile &&> : true_type {};
 
 
     template<typename T>
     struct is_empty : public integral_constant<bool, __is_empty(T)> { };
+
+
+    template<typename T>
+    struct is_void : is_same<void, typename remove_cv<T>::type> {};
+
+
+    namespace detail
+    {
+        // is_union implementation needs compiler hooks
+        // https://github.com/Quuxplusone/from-scratch/blob/master/include/scratch/bits/type-traits/compiler-magic.md
+        
+        //template<typename T>
+        //integral_constant<bool, !is_union<T>::value> test(int T::*);
+
+        template<typename T>
+        integral_constant<bool, true> test(int T::*);
+
+        template<typename>
+        false_type test(...);
+    }
+
+    template<typename T>
+    struct is_class : decltype(detail::test<T>(nullptr)) {};
+
+    
+    template<typename T>
+    struct is_scalar : integral_constant<bool,
+        is_arithmetic<T>::value ||
+        /*is_enum<T>::value || // is_enum implementation needs compiler hooks*/
+        is_pointer<T>::value ||
+        is_member_pointer<T>::value ||
+        is_same<nullptr_t, typename remove_cv<T>::type>::value> {};
+
+
+    template<typename T>
+    struct is_object : integral_constant<bool,
+        is_scalar<T>::value ||
+        is_array<T>::value ||
+        /*is_union<T>::value || // is_union implementation needs compiler hooks*/
+        is_class<T>::value> {};
+
+
+    namespace detail
+    {
+        template<typename B>
+        true_type test_pre_ptr_convertible(const volatile B*);
+
+        template<typename>
+        false_type test_pre_ptr_convertible(const volatile void*);
+
+        template<typename, typename>
+        auto test_pre_is_base_of(...) -> true_type;
+
+        template<typename B, typename D>
+        auto test_pre_is_base_of(int) ->
+            decltype(test_pre_ptr_convertible<B>(static_cast<D*>(nullptr)));
+    }
+
+    template<typename Base, typename Derived>
+    struct is_base_of : integral_constant<bool,
+        is_class<Base>::value &&
+        is_class<Derived>::value &&
+        decltype(detail::test_pre_is_base_of<Base, Derived>(0))::value> {};
 
 
     template <class T>
@@ -380,6 +499,70 @@ namespace arx { namespace stdx {
     }
     template<class Sig>
     using result_of = details::result_of<Sig>;
+
+
+    template<typename>
+    struct rank : integral_constant<size_t, 0> {};
+    template<typename T>
+    struct rank<T[]> : integral_constant<size_t, rank<T>::value + 1> {};
+    template<typename T, size_t N>
+    struct rank<T[N]> : integral_constant<size_t, rank<T>::value + 1> {};
+
+    template<typename T, unsigned N = 0>
+    struct extent : integral_constant<size_t, 0> {};
+    template<typename T>
+    struct extent<T[], 0> : integral_constant<size_t, 0> {};
+    template<typename T, unsigned N>
+    struct extent<T[], N> : extent<T, N - 1> {};
+    template<typename T, size_t I>
+    struct extent<T[I], 0> : integral_constant<size_t, I> {};
+    template<typename T, size_t I, unsigned N>
+    struct extent<T[I], N> : extent<T, N - 1> {};
+
+
+    template<typename T>
+    auto addressof(T& arg) noexcept
+        -> typename enable_if<is_object<T>::value, T*>::type
+    {
+        return reinterpret_cast<T*>(&const_cast<char&>(reinterpret_cast<const volatile char&>(arg)));
+    }
+
+    template<typename T>
+    auto addressof(T& arg) noexcept
+        -> typename enable_if<!is_object<T>::value, T*>::type
+    {
+        return &arg;
+    }
+    
+    
+    template<typename T>
+    class reference_wrapper
+    {
+    public:
+        using type = T;
+
+        reference_wrapper(T& ref) noexcept : m_ptr(addressof(ref)) {}
+        reference_wrapper(T&&) = delete; // as prior to LWG2993
+        reference_wrapper(const reference_wrapper&) noexcept = default;
+
+        reference_wrapper& operator= (const reference_wrapper& x) noexcept = default;
+
+        constexpr operator T& () const noexcept { return *m_ptr; }
+        constexpr T& get() const noexcept { return *m_ptr; }
+
+        // call-wrapping operator() omitted
+
+    private:
+        T* m_ptr;
+    };
+
+    template<typename T> reference_wrapper<T> ref(T& t) noexcept { return reference_wrapper<T>(t); }
+    template<typename T> reference_wrapper<T> ref(reference_wrapper<T> t) noexcept { return ref(t.get()); }
+    template<typename T> void ref(const T&&) = delete;
+
+    template<typename T> reference_wrapper<const T> cref(const T& t) noexcept { return reference_wrapper<const T>(t); }
+    template<typename T> reference_wrapper<const T> cref(reference_wrapper<T> t) noexcept { return cref(t.get()); }
+    template<typename T> void cref(const T&&) = delete;
 
 } } // namespace arx::stdx
 
@@ -433,6 +616,23 @@ namespace arx { namespace stdx {
     using remove_reference_t = typename remove_reference<T>::type;
     template<class T>
     using remove_pointer_t = typename remove_pointer<T>::type;
+    template<typename T>
+    using remove_extent_t = typename remove_extent<T>::type;
+    template<typename T>
+    using remove_all_extents_t = typename remove_all_extents<T>::type;
+
+    template<typename T>
+    using add_cv_t = typename add_cv<T>::type;
+    template<typename T>
+    using add_const_t = typename add_const<T>::type;
+    template<typename T>
+    using add_volatile_t = typename add_volatile<T>::type;
+    template<typename T>
+    using add_pointer_t = typename add_pointer<T>::type;
+    template<typename T>
+    using add_lvalue_reference_t = typename add_lvalue_reference<T>::type;
+    template<typename T>
+    using add_rvalue_reference_t = typename add_rvalue_reference<T>::type;
 
     template<typename T, T ...Ts>
     struct integer_sequence
@@ -469,6 +669,9 @@ namespace arx { namespace stdx {
     template<typename... Ts>
     using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
+    template<typename T>
+    struct is_null_pointer : is_same<nullptr_t, remove_cv_t<T>> {};
+
 } } // namespace arx::stdx
 
 #endif // Do not have libstdc++14
@@ -480,6 +683,50 @@ namespace arx { namespace stdx {
 #else // Do not have libstdc++17
 
 namespace arx { namespace stdx {
+
+    template<bool B>
+    using bool_constant = integral_constant<bool, B>;
+
+#if __cplusplus >= 201703L
+    template<typename T, typename U>
+    inline constexpr bool is_same_v = is_same<T, U>::value;
+    template<typename T>
+    inline constexpr bool is_void_v = is_void<T>::value;
+    template<typename T>
+    inline constexpr bool is_class_v = is_class<T>::value;
+    template<typename T>
+    inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
+    template<typename T>
+    inline constexpr bool is_const_v = is_const<T>::value;
+    template<typename T>
+    inline constexpr bool is_volatile_v = is_volatile<T>::value;
+    template<typename T>
+    inline constexpr bool is_reference_v = is_reference<T>::value;
+    template<typename T>
+    inline constexpr bool is_lvalue_reference_v = is_lvalue_reference<T>::value;
+    template<typename T>
+    inline constexpr bool is_rvalue_reference_v = is_rvalue_reference<T>::value;
+    template<typename T>
+    inline constexpr bool is_pointer_v = is_pointer<T>::value;
+    template<typename T>
+    inline constexpr bool is_member_pointer_v = is_member_pointer<T>::value;
+    template<typename T>
+    inline constexpr bool is_null_pointer_v = is_null_pointer<T>::value;
+    template<typename T>
+    inline constexpr bool is_scalar_v = is_scalar<T>::value;
+    template<typename T>
+    inline constexpr bool is_array_v = is_array<T>::value;
+    template<typename T>
+    inline constexpr bool is_object_v = is_object<T>::value;
+    template<typename T>
+    inline constexpr bool is_function_v = is_function<T>::value;
+    template<typename Base, typename Derived>
+    inline constexpr bool is_base_of_v = is_base_of<Base, Derived>::value;
+    template<typename T>
+    inline constexpr size_t rank_v = rank<T>::value;
+    template<typename T, unsigned N = 0>
+    inline constexpr size_t extent_v = extent<T, N>::value;
+#endif // C++17 supported
 
     template <class... Ts>
     struct Tester { using type = void; };
@@ -501,7 +748,7 @@ namespace arx { namespace stdx {
     struct conjunction <Arg, Args...> : conditional<Arg::value, conjunction<Args...>, Arg>::type {};
 
     template <typename T>
-    struct negation : integral_constant<bool, !T::value> {};
+    struct negation : bool_constant<!T::value> {};
 
     // https://qiita.com/_EnumHack/items/92e6e135174f1f781dbb
     // without decltype(auto)
@@ -527,6 +774,81 @@ namespace arx { namespace stdx {
         );
     }
 
+    namespace detail
+    {
+        template<typename>
+        struct is_reference_wrapper : false_type {};
+
+        template<typename U>
+        struct is_reference_wrapper<reference_wrapper<U>> : true_type {};
+
+        template<typename>
+        struct invoke_impl
+        {
+            template<typename F, typename... Args>
+            static auto call(F&& f, Args&&... args)
+                -> decltype(forward<F>(f)(forward<Args>(args)...));
+        };
+
+        template<typename B, typename MT>
+        struct invoke_impl<MT B::*>
+        {
+            template<typename T, typename Td = decay_t<T>,
+                typename = enable_if_t<is_base_of<B, Td>::value>
+            >
+            static auto get(T&& t) -> T&&;
+
+            template<typename T, typename Td = decay_t<T>,
+                typename = enable_if_t<is_reference_wrapper<Td>::value>
+            >
+            static auto get(T&& t) -> decltype(t.get());
+
+            template<typename T, typename Td = decay_t<T>,
+                typename = enable_if_t<!is_base_of<B, Td>::value>,
+                typename = enable_if_t<!is_reference_wrapper<Td>::value>
+            >
+            static auto get(T&& t) -> decltype(*forward<T>(t));
+
+            template<typename T, typename... Args, typename MT1,
+                typename = enable_if_t<is_function<MT1>::value>
+            >
+            static auto call(MT1 B::* pmf, T&& t, Args&&... args)
+                -> decltype((invoke_impl::get(forward<T>(t)).*pmf)(forward<Args>(args)...));
+
+            template<typename T>
+            static auto call(MT B::* pmd, T&& t)
+                -> decltype(invoke_impl::get(forward<T>(t)).*pmd);
+        };
+
+        template<typename F, typename... Args, typename Fd = decay_t<F>>
+        auto INVOKE(F&& f, Args&&... args)
+            -> decltype(invoke_impl<Fd>::call(forward<F>(f), forward<Args>(args)...));
+
+        template<typename AlwaysVoid, typename, typename...>
+        struct invoke_result { };
+
+        template<typename F, typename...Args>
+        struct invoke_result<decltype(void(INVOKE(declval<F>(), declval<Args>()...))), F, Args...>
+        {
+            using type = decltype(INVOKE(declval<F>(), declval<Args>()...));
+        };
+    }
+
+    template<typename F, typename... Args>
+    struct invoke_result : detail::invoke_result<void, F, Args...> {};
+
+    template<typename F, typename... Args>
+    using invoke_result_t = typename invoke_result<F, Args...>::type;
+    
+    template<typename T>
+    constexpr add_const_t<T>& as_const(T& val) noexcept
+    {
+        return val;
+    }
+
+    template<typename T>
+    void as_const(const T&&) = delete; 
+    
 } } // namespace arx::stdx
 
 #endif // Do not have libstdc++17
@@ -539,6 +861,12 @@ namespace arx { namespace stdx {
 
 namespace arx { namespace stdx {
 
+    template<typename T>
+    struct type_identity { using type = T; };
+
+    template<typename T>
+    using type_identity_t = typename type_identity<T>::type;
+
     template<class T>
     struct remove_cvref
     {
@@ -547,6 +875,23 @@ namespace arx { namespace stdx {
 
     template< class T >
     using remove_cvref_t = typename remove_cvref<T>::type;
+
+    template<typename T>
+    struct is_bounded_array : false_type {};
+    template<typename T, size_t N>
+    struct is_bounded_array<T[N]> : true_type {};
+
+    template<typename T>
+    struct is_unbounded_array : false_type {};
+    template<typename T>
+    struct is_unbounded_array<T[]> : true_type {};
+
+#if __cplusplus >= 201703L
+    template<typename T>
+    inline constexpr bool is_bounded_array_v = is_bounded_array<T>::value;
+    template<typename T>
+    inline constexpr bool is_unbounded_array_v = is_unbounded_array<T>::value;
+#endif // C++17 supported
 
 } } // namespace arx::stdx
 #endif // Do not have libstdc++2a
