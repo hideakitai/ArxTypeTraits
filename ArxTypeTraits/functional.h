@@ -130,7 +130,7 @@ namespace arx { namespace stdx {
 
         R operator()(Args...args) const
         {
-            return table->invoke(data, forward<Args>(args)...);
+            return table->invoke(data, std::forward<Args>(args)...);
         }
     };
 
