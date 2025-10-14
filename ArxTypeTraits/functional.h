@@ -84,7 +84,7 @@ namespace arx { namespace stdx {
         function(const Func& f)
         : table(vtable_t::template get<dF>())
         {
-            data = reinterpret_cast<void*>(new Func(f));
+            data = reinterpret_cast<void*>(new dF(f));
         }
         function(const function& o)
         : table(o.table)
